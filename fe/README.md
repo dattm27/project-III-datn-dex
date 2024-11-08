@@ -48,3 +48,22 @@ export default tseslint.config({
   },
 })
 ```
+
+
+Set up project
+```shell
+npm create vite@latest
+```
+
+Install ext ESLint
+
+install Prettier to make our code look nice.
+```shell
+install Prettier to make our code look nice.
+```
+
+Connect Wallet
+Install Web3Modal
+```shell
+ npm i web3modal
+```
