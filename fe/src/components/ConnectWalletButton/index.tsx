@@ -1,1 +1,1 @@
-export {default} from "./ConnectWalletButton"
+export * from "./ConnectWalletButton"

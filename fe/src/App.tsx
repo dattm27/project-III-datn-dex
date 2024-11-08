@@ -7,7 +7,7 @@ import './App.css'
 
 
 
-import ConnectWalletButton from './components/ConnectWalletButton'
+import {ConnectWalletButton} from './components/ConnectWalletButton'
 
 
 function App() {

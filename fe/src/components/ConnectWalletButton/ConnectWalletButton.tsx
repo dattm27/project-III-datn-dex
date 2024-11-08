@@ -15,7 +15,7 @@ const providerOptions = {
  
 };
 
-const ConnectWalletButton: React.FC = () => {
+export function ConnectWalletButton () {
   const [web3Provider, setWeb3Provider] = useState<Web3Provider | null>(null);
   const [address, setAddress] = useState<string | null>(null);
 
@@ -51,4 +51,4 @@ const ConnectWalletButton: React.FC = () => {
   );
 };
 
-export default ConnectWalletButton;
+
