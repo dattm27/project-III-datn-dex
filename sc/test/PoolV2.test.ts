@@ -23,8 +23,6 @@ describe("PoolV2", function () {
         await token1.mint(owner.address, parseUnits("100000"));
         await token0.connect(owner).approve(await pool.getAddress(), parseUnits("10000"));
         await token1.connect(owner).approve(await pool.getAddress(), parseUnits("10")); 
-        console.log(parseUnits("10000"));
-        console.log (parseUnits("10"));
         return { pool, token0, token1, owner, otherAccount };
     }
 
@@ -55,18 +53,37 @@ describe("PoolV2", function () {
 
             const balanceBefore = await token1.balanceOf(owner.address);
        
-            const amountIn = await pool.getAmountIn(await token1.getAddress(), parseUnits("1"));
-            const amountOut = await pool.getAmountOut(await token0.getAddress(),  amountIn  );
-            await token0.connect(owner).approve(await pool.getAddress(), amountIn);
+            const DAI_1000 =  parseUnits("1000");
+            const amountOut = await pool.getAmountOut(await token0.getAddress(), DAI_1000  );
+            await token0.connect(owner).approve(await pool.getAddress(), DAI_1000 );
 
-            
-            console.log(amountIn);
-            console.log(amountOut);
+        
+            //console.log(amountOut);
 
-            await pool.swap(await token0.getAddress(), amountIn );
+            await pool.swap(await token0.getAddress(), DAI_1000 );
             
 
             expect(await token1.balanceOf(owner.address)).to.equal(balanceBefore + amountOut);
+        });
+        
+        it("Should correctly swap token0 for exact token1", async function () {
+            const { pool, token0, token1, owner } = await loadFixture(deployPoolV2Fixture);
+
+            await pool.addLiquidity(parseUnits("10000"), parseUnits("10"));  //add 10000 DAI, 10 ETH to pool
+
+            const balanceBefore = await token1.balanceOf(owner.address);
+       
+            const ETH_1 =  parseUnits("1");
+            const amountIn = await pool.getAmountIn(await token1.getAddress(), ETH_1  );
+            await token0.connect(owner).approve(await pool.getAddress(), amountIn );
+
+        
+            //console.log(amountIn);
+
+            await pool.swapFor(await token1.getAddress(), ETH_1);
+            
+
+            expect(await token1.balanceOf(owner.address)).to.equal(balanceBefore + ETH_1);
         });
 
         it("Should fail if trying to swap unsupported token", async function () {
@@ -76,6 +93,15 @@ describe("PoolV2", function () {
                 "Invalid token"
             );
         });
+
+        it("Should fail if trying to swap unsupported token", async function () {
+            const { pool, owner } = await loadFixture(deployPoolV2Fixture);
+
+            await expect(pool.swap(owner.address, parseUnits("10"))).to.be.revertedWith(
+                "Invalid token"
+            );
+        });
+    
     });
 
     describe("Removing Liquidity", function () {
