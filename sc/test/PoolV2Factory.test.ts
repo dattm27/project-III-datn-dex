@@ -15,12 +15,18 @@ describe("PoolV2Factory", function () {
 
         // Deploy two mock ERC20 tokens
         const Token = await hre.ethers.getContractFactory("ERC20Token");
-        const DAI = await Token.deploy("DAI", "DAI", 0);
-        const ETH = await Token.deploy("ETH", "ETH", 0);
+        const DAI = await Token.deploy("DAI", "DAI");
+        const ETH = await Token.deploy("ETH", "ETH");
 
         // Deploy the PoolV2 contract with the two tokens
         const PoolV2Factory = await hre.ethers.getContractFactory("PoolV2Factory");
-        const poolV2Factory = await PoolV2Factory.deploy(owner);
+        const poolV2Factory = await hre.upgrades.deployProxy(
+            PoolV2Factory,
+            [await owner.getAddress()],
+            {initializer:  "initialize", kind: "transparent" }
+        )
+        poolV2Factory.waitForDeployment();
+        // await PoolV2Factory.deploy(owner);
 
         const PoolV2 = await hre.ethers.getContractFactory("PoolV2");
         return { poolV2Factory, PoolV2,  DAI, ETH, owner, otherAccount };

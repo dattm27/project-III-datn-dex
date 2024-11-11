@@ -9,12 +9,11 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    const name = "TokenB";
-    const symbol = "TB";
-    const initialSupply = 1000000;
+    const name = "Dai Stablecoin";
+    const symbol = "DAI";
     const data = await deploy("ERC20Token", {
         from: deployer,
-        args: [name, symbol, initialSupply], 
+        args: [name, symbol], 
         log: true,
         deterministicDeployment: false,
     });
@@ -28,7 +27,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     try {
         await hre.run("verify:verify", {
             address: data.address,
-            constructorArguments: [name, symbol, initialSupply],
+            constructorArguments: [name, symbol],
         });
     } catch (e) {
         console.log("Verification failed:", e);

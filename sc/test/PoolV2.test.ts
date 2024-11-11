@@ -11,8 +11,8 @@ describe("PoolV2", function () {
 
         // Deploy two mock ERC20 tokens
         const Token = await hre.ethers.getContractFactory("ERC20Token");
-        const token0 = await Token.deploy("DAI", "DAI", 0);
-        const token1 = await Token.deploy("ETH", "ETH", 0);
+        const token0 = await Token.deploy("DAI", "DAI");
+        const token1 = await Token.deploy("ETH", "ETH");
 
         // Deploy the PoolV2 contract with the two tokens
         const PoolV2 = await hre.ethers.getContractFactory("PoolV2");

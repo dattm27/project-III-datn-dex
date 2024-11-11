@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-
+import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '../interfaces/IPoolFactory.sol';
+
 import './PoolV2.sol';
 import 'hardhat/console.sol';
 
 
-contract PoolV2Factory is IPoolFactory {
+contract PoolV2Factory is Initializable , IPoolFactory{
     
     address public feeTo;
     address public feeToSetter;
@@ -14,10 +15,15 @@ contract PoolV2Factory is IPoolFactory {
     mapping(address => mapping(address => address)) public getPool;
     address[] public allPools;
 
-    constructor(address _feeToSetter) {
-        feeToSetter = _feeToSetter;
+       /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
+    function initialize(address _feeToSetter) public initializer{
+        feeToSetter = _feeToSetter;
+
+    }
     function allPoolsLength() external view returns (uint) {
         return allPools.length;
     }
