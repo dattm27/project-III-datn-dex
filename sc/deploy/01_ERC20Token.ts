@@ -9,8 +9,8 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    const name = "Dai Stablecoin";
-    const symbol = "DAI";
+    const name = "Mock ETH";
+    const symbol = "ETH";
     const data = await deploy("ERC20Token", {
         from: deployer,
         args: [name, symbol], 

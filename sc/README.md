@@ -16,3 +16,12 @@ npx hardhat ignition deploy ./ignition/modules/Lock.ts
 ```shell
 npx hardhat deploy --network sepolia --tags ERC20Token
 ```
+
+Deploy factory
+```shell
+npx hardhat deploy --network fuji --tags PoolV2Factory
+```
+Script to create Pool ERC20/ERC20
+```
+npx ts-node scripts/v2-core/01_createPool.ts    
+```
