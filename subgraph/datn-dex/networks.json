@@ -1,0 +1,8 @@
+{
+  "fuji": {
+    "PoolV2Factory": {
+      "address": "0x801DAe451343ab9d4A7D100D7d20628e57eA7c7e",
+      "startBlock": 36628427
+    }
+  }
+}
