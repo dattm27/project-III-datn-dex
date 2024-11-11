@@ -1,0 +1,26 @@
+{
+    "sepolia": {
+        "ERC20Token": {
+            "address": "0xD63d1Cf8C3B29629D473C6CC9baC282e6d0676B5"
+        },
+        "PoolV2": {
+            "address": "0xCe3cDA8d1348477065F3f97A8F3F914C5aA7d7D8"
+        }
+    },
+    "fuji": {
+        "ERC20Token": {
+            "address": "0xE9278693Dcd6e43C1d84f406329D099620EFE61e"
+        },
+        "PoolV2Factory": {
+            "address": "0x494226C29EcC8b76ab79af6D774c5f52e9B8b1F5",
+            "impl": "0x801DAe451343ab9d4A7D100D7d20628e57eA7c7e"
+        },
+        "tokens": {
+            "MockETH": "0xE9278693Dcd6e43C1d84f406329D099620EFE61e",
+            "USDC": "0x19D2b324DA54d176a44039ED780656Ea937AFB0F",
+            "USDT": "0xE8C574f888732AbC5f1725F34E6399c02275104D",
+            "WBTC": "0x33237b41C693bb1E86671cEe1462f98a08fe1dD2",
+            "DAI": "0x457Ff8ccCA294bEd934d3c9000Ed1FE94C2b0760"
+        }
+    }
+}
