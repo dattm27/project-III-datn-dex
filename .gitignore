@@ -1,4 +1,4 @@
 .env
 deployments/
-
+.DS_Store
 node_modules/
