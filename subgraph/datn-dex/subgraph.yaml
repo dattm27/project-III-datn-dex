@@ -1,0 +1,31 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: PoolV2Factory
+    network: fuji
+    source:
+      address: "0x494226C29EcC8b76ab79af6D774c5f52e9B8b1F5"
+      abi: PoolV2Factory
+      startBlock: 36628427
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Initialized
+        - Pool
+      abis:
+        - name: PoolV2Factory
+          file: ./abis/PoolV2Factory.json
+        - name: ERC20  
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: PoolCreated(indexed address,indexed address,address,uint256)
+          handler: handlePoolCreated
+      file: ./src/pool-v-2-factory.ts

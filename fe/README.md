@@ -67,3 +67,14 @@ Install Web3Modal
 ```shell
  npm i web3modal
 ```
+
+Để kết nối với subgraph
+```
+npm install @apollo/client graphql
+```
+
+
+Để điều hướng trong ứng dụng React
+```
+npm install react-router-dom
+```

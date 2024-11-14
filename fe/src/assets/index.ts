@@ -1,0 +1,1 @@
+export { default as IconMetamask } from "./images/icon-metamaks.svg";
