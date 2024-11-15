@@ -78,3 +78,9 @@ npm install @apollo/client graphql
 ```
 npm install react-router-dom
 ```
+
+
+Sử dụng file .scss 
+```
+npm i sass
+```
