@@ -1,7 +1,7 @@
 import React from 'react';
-import PoolList from '../components/PoolList';
+import {PoolList} from "src/components/Explore";
 
-const Explore: React.FC = () => {
+export const Explore: React.FC = () => {
   return (
     <div>
       <h1>Explore</h1>
@@ -10,4 +10,4 @@ const Explore: React.FC = () => {
   );
 };
 
-export default Explore;
+
