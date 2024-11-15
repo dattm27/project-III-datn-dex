@@ -1,5 +1,5 @@
 import React from 'react';
-import PoolList from '../../components/PoolList';
+import {PoolList} from "src/components/Explore";
 
 export const Explore: React.FC = () => {
   return (

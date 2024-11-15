@@ -1,10 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 
-import  { createContext, useState,  useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { Address } from 'viem';
-import { EConnectors, EConnectStatus,  } from "src/constants/web3";
+import { EConnectors, EConnectStatus, } from "src/constants/web3";
 
 // Interface for Auth State
 interface IAuthState {
@@ -49,9 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setStatus(EConnectStatus.CONNECTED);
     }
   }, [address, logout]);
-  useEffect(() => {
-    console.log("Available connectors:", connectors);
-  }, [connectors]);
+
   const handleConnect = useCallback(
     async (type: EConnectors) => {
       setStatus(EConnectStatus.CONNECTING);
@@ -64,7 +62,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         await connectAsync({ connector });
         setStatus(EConnectStatus.CONNECTED);
-        console.log(status.toString());
       } catch (error) {
         logout();
         console.error('Connection failed:', error);
