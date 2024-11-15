@@ -2,8 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import Navbar from './components/Navbar';
-import Explore from './pages/Explore';
+import { Layout } from './components/Layout';
 import { ApolloProvider } from '@apollo/client';
 
 import client from './apollo-client';
@@ -12,6 +11,8 @@ import { WagmiProvider } from "wagmi";
 
 import { AuthProvider } from './contexts';
 import { config } from './web3/config';
+import { routes } from "./routes";
+
 const queryClient = new QueryClient();
 const App: React.FC = () => {
   return (
@@ -22,12 +23,13 @@ const App: React.FC = () => {
           <AuthProvider>
 
             <Router>
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<div>Home Page</div>} />
-                <Route path="/explore" element={<Explore />} />
-
-              </Routes>
+              <Layout>
+                <Routes>
+                  {routes.map((item) => (
+                    <Route key={item.path} {...item} />
+                  ))}
+                </Routes>
+              </Layout>
             </Router>
           </AuthProvider>
         </QueryClientProvider>
