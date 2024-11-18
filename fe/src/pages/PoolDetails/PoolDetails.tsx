@@ -9,20 +9,27 @@ const GET_POOL_DETAIL = gql`
       token0 {
         name
         symbol
+        decimals
       }
       token1 {
         name
         symbol
+        decimals
       }
       # pair
-      # reserve0
-      # reserve1
+      reserve0
+      reserve1
       # tvl
       # volume24h
       # fee24h
     }
   }
 `;
+
+const formatReserve = (reserve: string, decimals: number) => {
+  // Convert from the smallest unit to the token unit (10^decimals)
+  return (parseInt(reserve) / Math.pow(10, decimals)).toFixed(decimals);
+};
 
 export const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
@@ -45,8 +52,8 @@ export const PoolDetails: React.FC = () => {
   }
 
   const pool = data.pool;
-  const reserve0 = pool.reserve0 || '0';
-  const reserve1 = pool.reserve1 || '0';
+  const reserve0 = formatReserve(pool.reserve0, pool.token0.decimals);
+  const reserve1 =formatReserve(pool.reserve1, pool.token1.decimals);
   const tvl = pool.tvl || '$0';
   const volume24h = pool.volume24h || '$0';
   const fee24h = pool.fee24h || '$0';
