@@ -3,6 +3,9 @@
     "PoolV2Factory": {
       "address": "0x801DAe451343ab9d4A7D100D7d20628e57eA7c7e",
       "startBlock": 36628427
+    },
+    "PoolV2": {
+      "address": "0x8Cf1c5355EC13868a95AF95de87a459524B2C51D"
     }
   }
 }

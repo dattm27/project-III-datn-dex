@@ -21,7 +21,7 @@ dataSources:
       abis:
         - name: PoolV2Factory
           file: ./abis/PoolV2Factory.json
-        - name: ERC20  
+        - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
         - event: Initialized(uint64)
@@ -29,3 +29,31 @@ dataSources:
         - event: PoolCreated(indexed address,indexed address,address,uint256)
           handler: handlePoolCreated
       file: ./src/pool-v-2-factory.ts
+templates:
+  - kind: ethereum
+    name: PoolV2
+    network: fuji
+    source:
+      abi: PoolV2
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AddLiquidity
+        - RemoveLiquidity
+        - Swap
+        - Sync
+      abis:
+        - name: PoolV2
+          file: ./abis/PoolV2.json
+      eventHandlers:
+        - event: AddLiquidity(indexed address,uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(indexed address,uint256,uint256)
+          handler: handleRemoveLiquidity
+        - event: Swap(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: Sync(uint256,uint256)
+          handler: handleSync
+      file: ./src/mappings/pool-v-2.ts
