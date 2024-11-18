@@ -8,9 +8,10 @@ dataSources:
     name: PoolV2Factory
     network: fuji
     source:
-      address: "0x494226C29EcC8b76ab79af6D774c5f52e9B8b1F5"
+      address: "0x7B50B6261Dc3CB95B9b2512b2684d1254CEe11f1"
       abi: PoolV2Factory
-      startBlock: 36628427
+      startBlock: 36727754
+
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
