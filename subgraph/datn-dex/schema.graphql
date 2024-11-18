@@ -14,7 +14,7 @@ type Token @entity {
 }
 
 
-type Pool @entity(immutable: true) {
+type Pool @entity(immutable: false) {
   id: ID!
   token0: Token! # address
   token1: Token! # address

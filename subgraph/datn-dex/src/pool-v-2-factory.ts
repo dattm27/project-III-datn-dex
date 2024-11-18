@@ -6,6 +6,7 @@ import { Initialized, Pool, Token } from "../generated/schema"
 import {ERC20} from "../generated/PoolV2Factory/ERC20"
 import { Address } from "@graphprotocol/graph-ts"
 import { BigInt } from "@graphprotocol/graph-ts"
+import { PoolV2 as PoolV2Ins } from "../generated/templates"
 
 export function handleInitialized(event: InitializedEvent): void {
   let entity = new Initialized(
@@ -22,7 +23,7 @@ export function handleInitialized(event: InitializedEvent): void {
 
 export function handlePoolCreated(event: PoolCreatedEvent): void {
   let entity = new Pool(
-    event.params.pair.toHex()
+    event.params.pair.toString()
   )
 
 
@@ -45,6 +46,8 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  PoolV2Ins.create(event.params.pair)
 }
 
 //check if token exists and create if needed

@@ -49,9 +49,9 @@ templates:
         - name: PoolV2
           file: ./abis/PoolV2.json
       eventHandlers:
-        - event: AddLiquidity(indexed address,uint256,uint256)
+        - event: AddLiquidity(indexed address,uint256,uint256,uint256)
           handler: handleAddLiquidity
-        - event: RemoveLiquidity(indexed address,uint256,uint256)
+        - event:  RemoveLiquidity(indexed address,uint256,uint256,uint256)
           handler: handleRemoveLiquidity
         - event: Swap(indexed address,uint256,uint256,uint256,uint256)
           handler: handleSwap
