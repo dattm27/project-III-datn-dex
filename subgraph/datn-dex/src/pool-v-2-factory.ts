@@ -23,7 +23,7 @@ export function handleInitialized(event: InitializedEvent): void {
 
 export function handlePoolCreated(event: PoolCreatedEvent): void {
   let entity = new Pool(
-    event.params.pair.toString()
+    event.params.pair.toHex()
   )
 
 
