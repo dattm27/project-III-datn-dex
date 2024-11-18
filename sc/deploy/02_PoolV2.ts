@@ -9,8 +9,8 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    const token0 = "0xDf14196B82548C685c1123E5f8686783E135fDF5";
-    const token1 = "0xD63d1Cf8C3B29629D473C6CC9baC282e6d0676B5";
+    const token0 = "0x457Ff8ccCA294bEd934d3c9000Ed1FE94C2b0760";
+    const token1 = "0x33237b41C693bb1E86671cEe1462f98a08fe1dD2";
     const data = await deploy("PoolV2", {
         from: deployer,
         args: [token0 , token1], 

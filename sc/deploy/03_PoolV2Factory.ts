@@ -20,6 +20,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         log: true,
         deterministicDeployment: false,
         gasPrice: (await web3.eth.getGasPrice()).toString(),
+        gasLimit: 5000000,
         proxy: {
             proxyContract: "OptimizedTransparentProxy",
             owner: deployer,
@@ -33,6 +34,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     console.log("PoolV2Factory deployed to:", data.address);
 
     // save contract address
+    await saveContract(network.name, "DefaultProxyAdmin", data.args![1]);
     await saveContract(network.name, "PoolV2Factory", data.address, data.implementation!);
 
     // verify proxy contract
@@ -40,7 +42,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         // verify
         await hre.run("verify:verify", {
             address: data.address,
-            constructorArguments: [setter],
+            constructorArguments: [],
         });
     } catch (e) {
         console.log(e);
