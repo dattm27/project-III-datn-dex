@@ -25,6 +25,8 @@ type Pool @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  
+  liquidityProviders: [LiquidityProvider!]
 }
 
 type AddLiquidity @entity(immutable: true) {
@@ -66,4 +68,15 @@ type Sync @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+}
+
+
+type LiquidityProvider @entity {
+  id: ID!  
+  provider: Bytes!  
+  pools: [Pool!]  
+  token0Amount: BigDecimal!  
+  token1Amount: BigDecimal!  
+  liquidityAmount: BigDecimal!  
+  timestamp: BigInt!  
 }

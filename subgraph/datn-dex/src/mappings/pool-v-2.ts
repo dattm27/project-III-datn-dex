@@ -3,8 +3,8 @@ import {
   RemoveLiquidity as RemoveLiquidityEvent,
   Swap as SwapEvent,
   Sync as SyncEvent,
-} from "../../generated/PoolV2/PoolV2"
-import { AddLiquidity, RemoveLiquidity, Swap, Sync } from "../../generated/schema"
+} from "../../generated/templates/PoolV2/PoolV2"
+import { AddLiquidity, LiquidityProvider, Pool, RemoveLiquidity, Swap, Sync } from "../../generated/schema"
 
 export function handleAddLiquidity(event: AddLiquidityEvent): void {
   let entity = new AddLiquidity(
@@ -19,6 +19,20 @@ export function handleAddLiquidity(event: AddLiquidityEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let pool = Pool.load(event.address.toString())
+  if (pool == null) return ;
+  //add AddLiquidity object to Pool
+ 
+
+  
+  //update pool reserves
+  pool.reserve0 =   pool.reserve0.plus(event.params.amount0);
+  pool.reserve1 =   pool.reserve1.plus(event.params.amount1);
+  pool.save();
+  //update liquidity provider shares
+  // let lp  = LiquidityProvider.load()
+
 }
 
 export function handleRemoveLiquidity(event: RemoveLiquidityEvent): void {
@@ -34,6 +48,18 @@ export function handleRemoveLiquidity(event: RemoveLiquidityEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let pool = Pool.load(event.address.toString())
+  if (pool == null) return ;
+  //add RemoveLuidity object to Pool
+
+  //update pool reserves
+  pool.reserve0 =   pool.reserve0.minus(event.params.amount0);
+  pool.reserve1 =   pool.reserve1.minus(event.params.amount1);
+  pool.save();
+
+  //update liquidity provider shares
+
 }
 
 export function handleSwap(event: SwapEvent): void {
@@ -51,6 +77,18 @@ export function handleSwap(event: SwapEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let pool = Pool.load(event.address.toString())
+  if (pool == null) return ;
+  //add Swap object to Pool
+
+
+  //update pool reserves
+  pool.reserve0 = pool.reserve0.plus(event.params.amount0In).minus(event.params.amount0Out);
+  pool.reserve1 = pool.reserve1.plus(event.params.amount1In).minus(event.params.amount1Out);
+
+
+  pool.save();
 }
 
 export function handleSync(event: SyncEvent): void {
@@ -65,4 +103,14 @@ export function handleSync(event: SyncEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  let pool = Pool.load(event.address.toHex());
+  if (!pool) return;
+
+  // Update pool reserves
+  pool.reserve0 = event.params.reserve0;
+  pool.reserve1 = event.params.reserve1;
+
+  pool.save();
+
 }
