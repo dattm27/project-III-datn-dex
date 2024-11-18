@@ -7,9 +7,9 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import * as fs from "fs";
-
-
 const addresses = JSON.parse(fs.readFileSync("./contract-addresses.json", "utf-8"));
+
+
 const address = addresses.fuji.PoolV2Factory.address;
 const tokens = addresses.fuji.tokens;
 
@@ -38,7 +38,7 @@ async function main() {
     //agrs
 
     const txData = contract.methods
-        .createPool(tokens.WBTC, tokens.USDT)
+        .createPool(tokens.USDC, tokens.USDT)
         .encodeABI();
     console.log(txData);
 
