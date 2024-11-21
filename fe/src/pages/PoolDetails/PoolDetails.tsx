@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 
 const GET_POOL_DETAIL = gql`
@@ -33,6 +33,7 @@ const formatReserve = (reserve: string, decimals: number) => {
 
 export const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
+  const navigate = useNavigate();
   const { loading, error, data } = useQuery<{ pool: Pool }>(GET_POOL_DETAIL, {
     variables: { id: poolId },
   });
@@ -53,7 +54,7 @@ export const PoolDetails: React.FC = () => {
 
   const pool = data.pool;
   const reserve0 = formatReserve(pool.reserve0, pool.token0.decimals);
-  const reserve1 =formatReserve(pool.reserve1, pool.token1.decimals);
+  const reserve1 = formatReserve(pool.reserve1, pool.token1.decimals);
   const tvl = pool.tvl || '$0';
   const volume24h = pool.volume24h || '$0';
   const fee24h = pool.fee24h || '$0';
@@ -93,9 +94,17 @@ export const PoolDetails: React.FC = () => {
         </ul>
       </div>
 
-      {/* Action Buttons */}
       <div style={{ marginTop: '20px' }}>
-        <button
+        <button onClick={() => navigate(`/add-liquidity/${poolId}`, {
+          // truyen 2 token cua pair sang trang AddLiquidity
+          state: {
+            token0: pool.token0,
+            token1: pool.token1,
+            pool: pool
+          },
+
+        },
+        )}
           style={{
             padding: '10px 20px',
             marginRight: '10px',

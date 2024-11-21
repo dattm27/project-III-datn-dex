@@ -19,6 +19,10 @@ const GET_POOLS = gql`
   }
 `;
 
+// get pool's data 
+
+
+
 export const PoolList: React.FC = () => {
   const { loading, error, data } = useQuery<{ pools: Pool[] }>(GET_POOLS);
   const navigate = useNavigate();

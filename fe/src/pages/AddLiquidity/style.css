@@ -1,0 +1,93 @@
+/* AddLiquidity.css */
+
+.add-liquidity-container {
+    max-width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  .add-liquidity-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .add-liquidity-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Form Row */
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .form-label {
+    font-weight: bold;
+    color: #555;
+    text-align: left;
+  }
+  
+  /* Dropdown Row */
+  .dropdown-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .dropdown-row select {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .dropdown-row select:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+  
+  /* Input Row */
+  .input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .input-row input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .input-row input:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #45a049;
+  }
+  
