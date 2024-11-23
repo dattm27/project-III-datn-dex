@@ -19,3 +19,12 @@ export enum EConnectStatus {
   SIGNING,
   SIGNED
 }
+
+// for random avatar 
+export const AvatarSeeds = [
+  "Andrea",
+  "John",
+  "Mary",
+  "Steve",
+  "Lucy"
+];

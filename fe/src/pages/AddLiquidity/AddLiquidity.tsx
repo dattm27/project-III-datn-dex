@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Select, Button, Alert, Spin, Typography } from "antd";
+import { Form, Input, Select, Button, Alert, Typography } from "antd";
 import { useLocation } from "react-router-dom";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi"; // Replace with actual hooks
+import { useWriteContract, useWaitForTransactionReceipt, useAccount} from "wagmi"; // Replace with actual hooks
+import { ConnectWallet } from "src/components/ConnectWalletButton";
 import { getTokens, getPools } from "src/services";
 import { parseUnits } from "ethers";
 import { POOL_ABI } from "src/web3/abis";
@@ -18,6 +19,8 @@ export const AddLiquidity: React.FC = () => {
   const [token0Amount, setToken0Amount] = useState("");
   const [token1Amount, setToken1Amount] = useState("");
   const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
+  const { isConnected } = useAccount();
+
 
   useEffect(() => {
     async function fetchData() {
@@ -91,6 +94,14 @@ export const AddLiquidity: React.FC = () => {
       hash,
     });
 
+  // reset token amount after transaction is confirmed
+  useEffect(() => {
+    if (isConfirmed) {
+      setToken0Amount("");
+      setToken1Amount("");
+    }
+  }, [isConfirmed]);
+
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
       <Typography.Title level={2}>Add Liquidity</Typography.Title>
@@ -135,9 +146,11 @@ export const AddLiquidity: React.FC = () => {
               type="number"
               placeholder={`Amount for ${token0?.symbol || ""}`}
               value={token0Amount}
+              required
               onChange={(e) => {
                 setToken0Amount(e.target.value);
-                setToken1Amount(calculateAmount1(e.target.value));
+                // avoid divide by 0 
+                if (parseFloat(selectedPool!.reserve1)) setToken1Amount(calculateAmount1(e.target.value));
               }}
               style={{ width: "48%", marginRight: "4%" }}
             />
@@ -145,9 +158,11 @@ export const AddLiquidity: React.FC = () => {
               type="number"
               placeholder={`Amount for ${token1?.symbol || ""}`}
               value={token1Amount}
+              required
               onChange={(e) => {
                 setToken1Amount(e.target.value);
-                setToken0Amount(calculateAmount0(e.target.value));
+                // avoid divide by 0 
+                if (parseFloat(selectedPool!.reserve0)) setToken0Amount(calculateAmount0(e.target.value));
               }}
               style={{ width: "48%" }}
             />
@@ -155,16 +170,19 @@ export const AddLiquidity: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            block
-            loading={isPending}
-            disabled={isPending}
-          >
-            {isPending ? "Confirming" : "Add Liquidity"}
-          </Button>
+          {!isConnected ? (
+            <ConnectWallet block={true}/>
+          ) : (
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
+              block
+              loading={isPending}
+              disabled={isPending}
+            >
+              {isPending ? "Confirming" : "Add Liquidity"}
+            </Button>)}
         </Form.Item>
 
         {hash && (
@@ -197,11 +215,6 @@ export const AddLiquidity: React.FC = () => {
           />
         )}
 
-        {isPending && (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <Spin size="large" />
-          </div>
-        )}
       </Form>
     </div>
   );

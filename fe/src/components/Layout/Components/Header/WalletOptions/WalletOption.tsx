@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Connector, useConnect } from 'wagmi'
-
+import { Button } from "antd";
 export function WalletOptions() {
   const { connectors, connect } = useConnect()
 
@@ -30,8 +30,14 @@ function WalletOption({
   }, [connector])
 
   return (
-    <button disabled={!ready} onClick={onClick}>
+    <Button
+      type="default"
+      block
+      disabled={!ready}
+      onClick={onClick}
+      style={{ marginBottom: "8px" }}
+    >
       {connector.name}
-    </button>
+    </Button>
   )
 }
