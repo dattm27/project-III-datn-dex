@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {  useLocation } from "react-router-dom";
-import { getTokens, getPools,  } from "src/services/pools";
-import { useWriteContract } from 'wagmi'
-import { POOL_ABI } from "src/web3/abis"; 
-import {Address} from 'viem';
+import { Form, Input, Select, Button, Alert, Spin, Typography } from "antd";
+import { useLocation } from "react-router-dom";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi"; // Replace with actual hooks
+import { getTokens, getPools } from "src/services";
 import { parseUnits } from "ethers";
-import "./style.css"
+import { POOL_ABI } from "src/web3/abis";
+import { Address } from "viem";
+const { Option } = Select;
+const { Text } = Typography;
+
 export const AddLiquidity: React.FC = () => {
   const location = useLocation();
-  // const { poolId } = useParams<{ poolId: string }>();
   const [tokens, setTokens] = useState<Token[]>([]);
   const [pools, setPools] = useState<Pool[]>([]);
   const [token0, setToken0] = useState<Token | null>(null);
@@ -20,22 +22,15 @@ export const AddLiquidity: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        setToken0(location.state.token0);
-        setToken1(location.state.token1);
-        //Lấy danh sách tokens và pools
         const tokensData = await getTokens();
         const poolsData = await getPools();
-        //const pool = await getPoolDetails(poolId!);
-        // console.log(pool);
 
         setTokens(tokensData);
         setPools(poolsData);
 
-        //Set mặc định token0 và token1
-        if (tokensData.length > 1) 
-        {
-          setToken0(location.state.token0);
-          setToken1(location.state.token1);
+        if (tokensData.length > 1) {
+          setToken0(location.state.token0 || tokensData[0]);
+          setToken1(location.state.token1 || tokensData[1]);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -43,10 +38,9 @@ export const AddLiquidity: React.FC = () => {
     }
 
     fetchData();
-  }, []);
+  }, [location]);
 
   useEffect(() => {
-    // Tìm pool tương ứng với cặp token
     if (token0 && token1) {
       const pool = pools.find(
         (p: Pool) =>
@@ -76,63 +70,68 @@ export const AddLiquidity: React.FC = () => {
     }
     return "";
   };
-  const { data: hash, writeContract } = useWriteContract();
 
-  const handleAddLiquidity = async(poolId: string, amount0: string, amount1: string)   => {
+  const { data: hash, isPending, writeContract } = useWriteContract();
+
+  const handleAddLiquidity = async () => {
     try {
       writeContract({
         abi: POOL_ABI,
-        address: poolId as Address,
-        functionName: 'addLiquidity',
-        args: [
-          parseUnits(amount0),
-          parseUnits(amount1),
-        ],
+        address: selectedPool!.id as Address,
+        functionName: "addLiquidity",
+        args: [parseUnits(token0Amount), parseUnits(token1Amount)],
       });
     } catch (error) {
       console.error("Transaction failed:", error);
     }
-  }
+  };
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
 
   return (
-    <div className="add-liquidity-container">
-      <h1>Add Liquidity</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-            console.log(`Adding liquidity: ${token0Amount} ${token0?.symbol}, ${token1Amount} ${token1?.symbol}`);
-        }}
-        className="add-liquidity-form"
+    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+      <Typography.Title level={2}>Add Liquidity</Typography.Title>
+      <Form
+        layout="vertical"
+        onFinish={handleAddLiquidity}
       >
-        <div className="form-row">
-          <label className="form-label">Select Pair:</label>
-          <div className="dropdown-row">
-            <select
-              value={token0?.symbol || ""}
-              onChange={(e) => setToken0(tokens.find((t) => t.symbol === e.target.value) || null)}
+        <Form.Item label="Select Pair" required>
+          <Input.Group compact>
+            <Select
+              value={token0?.symbol}
+              onChange={(value) =>
+                setToken0(tokens.find((t) => t.symbol === value) || null)
+              }
+              style={{ width: "48%", marginRight: "4%" }}
             >
               {tokens.map((token) => (
-                <option key={token.symbol} value={token.symbol}>
+                <Option key={token.symbol} value={token.symbol}>
                   {token.symbol} - {token.name}
-                </option>
+                </Option>
               ))}
-            </select>
-            <select
-              value={token1?.symbol || ""}
-              onChange={(e) => setToken1(tokens.find((t) => t.symbol === e.target.value) || null)}
+            </Select>
+            <Select
+              value={token1?.symbol}
+              onChange={(value) =>
+                setToken1(tokens.find((t) => t.symbol === value) || null)
+              }
+              style={{ width: "48%" }}
             >
               {tokens.map((token) => (
-                <option key={token.symbol} value={token.symbol}>
+                <Option key={token.symbol} value={token.symbol}>
                   {token.symbol} - {token.name}
-                </option>
+                </Option>
               ))}
-            </select>
-          </div>
-        </div>
-        <div className="form-row">
-          <label className="form-label">Deposit Amount:</label>
-          <div className="input-row">
-            <input
+            </Select>
+          </Input.Group>
+        </Form.Item>
+
+        <Form.Item label="Deposit Amount" required>
+          <Input.Group compact>
+            <Input
               type="number"
               placeholder={`Amount for ${token0?.symbol || ""}`}
               value={token0Amount}
@@ -140,9 +139,9 @@ export const AddLiquidity: React.FC = () => {
                 setToken0Amount(e.target.value);
                 setToken1Amount(calculateAmount1(e.target.value));
               }}
-              required
+              style={{ width: "48%", marginRight: "4%" }}
             />
-            <input
+            <Input
               type="number"
               placeholder={`Amount for ${token1?.symbol || ""}`}
               value={token1Amount}
@@ -150,18 +149,60 @@ export const AddLiquidity: React.FC = () => {
                 setToken1Amount(e.target.value);
                 setToken0Amount(calculateAmount0(e.target.value));
               }}
-              required
+              style={{ width: "48%" }}
             />
+          </Input.Group>
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            block
+            loading={isPending}
+            disabled={isPending}
+          >
+            {isPending ? "Confirming" : "Add Liquidity"}
+          </Button>
+        </Form.Item>
+
+        {hash && (
+          <Alert
+            type="info"
+            message={
+              <>
+                Transaction Hash: <Text copyable>{hash}</Text>
+              </>
+            }
+            showIcon
+          />
+        )}
+
+        {isConfirming && (
+          <Alert
+            type="warning"
+            message="Waiting for confirmation..."
+            showIcon
+            style={{ marginTop: "10px" }}
+          />
+        )}
+
+        {isConfirmed && (
+          <Alert
+            type="success"
+            message="Transaction confirmed."
+            showIcon
+            style={{ marginTop: "10px" }}
+          />
+        )}
+
+        {isPending && (
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <Spin size="large" />
           </div>
-        </div>
-        <button type="submit" className="submit-btn" onClick={() => {handleAddLiquidity(selectedPool!.id, token0Amount, token1Amount)}}>
-          Add Liquidity
-        </button>
-        {hash && <div>Transaction Hash: {hash}</div>}
-      </form>
+        )}
+      </Form>
     </div>
   );
 };
-
-
-

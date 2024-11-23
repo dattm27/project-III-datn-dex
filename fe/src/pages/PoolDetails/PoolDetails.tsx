@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
-
+import { getPoolDetails } from 'src/services';
 const GET_POOL_DETAIL = gql`
   query GetPool($id: String!) {
     pool(id: $id) {
@@ -31,13 +31,33 @@ const formatReserve = (reserve: string, decimals: number) => {
   return (parseInt(reserve) / Math.pow(10, decimals)).toFixed(decimals);
 };
 
+const defaultPool: Pool = {
+  id: "default-id",
+  token0: { id:  "default-id", name: "Default Token0", symbol: "DT0", decimals: 18 },
+  token1: { id:  "default-id", name: "Default Token1", symbol: "DT1", decimals: 18 },
+  pair: "default-pair",
+  reserve0: "0",
+  reserve1: "0",
+};
+
+
 export const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
+  const [pool_, setPool] = useState<Pool> (defaultPool);
   const navigate = useNavigate();
   const { loading, error, data } = useQuery<{ pool: Pool }>(GET_POOL_DETAIL, {
     variables: { id: poolId },
   });
 
+  useEffect(() => {
+    async function fetchData() {
+      const pool = await getPoolDetails(poolId!);
+      setPool(pool );
+    }
+    fetchData()
+    console.log(pool_?.reserve0, pool_?.reserve1)
+  },[])
+  
   useEffect(() => {
     if (data?.pool) {
       document.title = `${data.pool.token0.symbol}/${data.pool.token1.symbol}: Buy and Sell`;
