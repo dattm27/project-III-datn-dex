@@ -1,7 +1,7 @@
 import { RPC_URL } from "src/constants";
 import { createConfig, http } from "wagmi";
 import { avalancheFuji } from "wagmi/chains";
-import { injected } from "wagmi/connectors";
+import { injected} from "wagmi/connectors";
 
 export const config = createConfig({
   multiInjectedProviderDiscovery: false,

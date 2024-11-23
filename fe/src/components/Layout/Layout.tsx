@@ -1,4 +1,4 @@
-import {Header, Footer} from "./Components"
+import {Header, Footer} from "./components"
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div>
       <Header />

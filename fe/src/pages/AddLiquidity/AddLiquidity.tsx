@@ -100,9 +100,7 @@ export const AddLiquidity: React.FC = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          
-          handleAddLiquidity(selectedPool!.id, token0Amount, token1Amount)
-          console.log(`Adding liquidity: ${token0Amount} ${token0?.symbol}, ${token1Amount} ${token1?.symbol}`);
+            console.log(`Adding liquidity: ${token0Amount} ${token0?.symbol}, ${token1Amount} ${token1?.symbol}`);
         }}
         className="add-liquidity-form"
       >
