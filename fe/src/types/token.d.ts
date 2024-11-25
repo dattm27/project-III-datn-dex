@@ -6,3 +6,8 @@ declare interface Token {
     
 }
   
+declare interface AllowanceProps {
+    tokenAddress: string;
+    ownerAddress: string;
+    spenderAddress: string;
+  }

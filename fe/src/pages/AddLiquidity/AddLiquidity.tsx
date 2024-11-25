@@ -7,6 +7,7 @@ import { getTokens, getPools } from "src/services";
 import { parseUnits } from "ethers";
 import { POOL_ABI } from "src/web3/abis";
 import { Address } from "viem";
+import { Allowance } from "./Allowance";
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -19,7 +20,7 @@ export const AddLiquidity: React.FC = () => {
   const [token0Amount, setToken0Amount] = useState("");
   const [token1Amount, setToken1Amount] = useState("");
   const [selectedPool, setSelectedPool] = useState<Pool | null>(null);
-  const { isConnected } = useAccount();
+  const { isConnected , address} = useAccount();
 
 
   useEffect(() => {
@@ -74,11 +75,11 @@ export const AddLiquidity: React.FC = () => {
     return "";
   };
 
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: hash, isPending, writeContract: addLiquidity} = useWriteContract();
 
   const handleAddLiquidity = async () => {
     try {
-      writeContract({
+      addLiquidity({
         abi: POOL_ABI,
         address: selectedPool!.id as Address,
         functionName: "addLiquidity",
@@ -101,6 +102,11 @@ export const AddLiquidity: React.FC = () => {
       setToken1Amount("");
     }
   }, [isConfirmed]);
+
+
+
+
+  
 
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
@@ -190,7 +196,7 @@ export const AddLiquidity: React.FC = () => {
             type="info"
             message={
               <>
-                Transaction Hash: <Text copyable>{hash}</Text>
+            Transaction Hash: <Text copyable>{hash}</Text>
               </>
             }
             showIcon
@@ -216,6 +222,13 @@ export const AddLiquidity: React.FC = () => {
         )}
 
       </Form>
+      {isConnected  && <Allowance
+        tokenAddress={"0x19D2b324DA54d176a44039ED780656Ea937AFB0F"
+        }
+        ownerAddress={address!}
+        spenderAddress={"0x568f46d6df765fc093f852fe6cde5e0d4311761b"}
+      />}
+
     </div>
   );
 };
