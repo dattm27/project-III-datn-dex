@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-
 import { ERC20_ABI } from "../abis";
 
 /**
@@ -30,16 +29,5 @@ export const approveToken = async (
     await tx.wait();
   };
 
-/**
- * Add liquidity to a pool contract.
- */
-// export const addLiquidity = async (
-//   signer: ethers.Signer,
-//   poolAddress: string,
-//   amount0: ethers.BigNumber,
-//   amount1: ethers.BigNumber
-// ): Promise<void> => {
-//   const poolContract = new ethers.Contract(poolAddress, POOL_ABI, signer);
-//   const tx = await poolContract.addLiquidity(amount0, amount1);
-//   await tx.wait();
-// };
+
+

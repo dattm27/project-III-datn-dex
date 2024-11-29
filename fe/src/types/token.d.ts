@@ -11,3 +11,9 @@ declare interface AllowanceProps {
     ownerAddress: string;
     spenderAddress: string;
   }
+
+
+  declare interface BalanceProps {
+    tokenAddress: string;
+    accountAddress: string;
+  }
