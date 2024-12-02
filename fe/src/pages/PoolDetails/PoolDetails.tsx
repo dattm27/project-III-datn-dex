@@ -179,7 +179,11 @@ export const PoolDetails: React.FC = () => {
               </Button>
             </Col>
             <Col span={12}>
-            <SwapButton poolId={poolId!} />
+            <SwapButton 
+              poolId={poolId!} 
+              token0 = {data?.pool.token0}
+              token1 = {data?.pool.token1}
+              />
             </Col>
           </Row>
 

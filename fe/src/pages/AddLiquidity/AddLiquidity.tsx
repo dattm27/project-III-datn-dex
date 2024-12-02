@@ -4,12 +4,11 @@ import { useLocation, useParams } from "react-router-dom";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount } from "wagmi"; // Replace with actual hooks
 import { ConnectWallet } from "src/components/ConnectWalletButton";
 import { getTokens, getPools, getPoolDetails } from "src/services";
-import { parseUnits, formatUnits } from "ethers";
+import { parseUnits, } from "ethers";
 import { POOL_ABI } from "src/web3/abis";
 import { Address } from "viem";
 import { useCheckAllowance, useCheckBalance } from "src/web3/ERC20Token/readContract";
 import { ApproveERC20Button } from "./ApproveERC20TokenButton";
-import { Allowance } from "./Allowance";
 const { Option } = Select;
 const { Text } = Typography;
 
