@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Input, Row, Col, Typography, message } from 'antd';
+import { Button, Modal, Input, Row, Col, Typography, message, Alert } from 'antd';
 import { SwapOutlined, CloseOutlined } from '@ant-design/icons';
 import { useQuery, gql } from '@apollo/client';
 import { formatUnits, parseUnits } from 'ethers';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { ConnectWallet } from 'src/components/ConnectWalletButton';
 import { useCheckAllowance, useCheckBalance } from 'src/web3/ERC20Token/readContract';
 import { ApproveERC20Button } from '../AddLiquidity/ApproveERC20TokenButton';
-import {Address} from 'viem';
-const { Title } = Typography;
+import { Address } from 'viem';
+const { Title, Text } = Typography;
 import { POOL_ABI } from 'src/web3/abis';
 
 const GET_POOL_DETAIL = gql`
@@ -46,21 +46,32 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   });
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [tokenIn, setTokenIn] = useState<string>(''); //token in
-  const [tokenOut, setTokenOut] = useState<string>('');
+  const [tokenIn, setTokenIn] = useState<Token>(token0); //token in
+  const [tokenOut, setTokenOut] = useState<Token>(token1);
   const [amount, setAmount] = useState<string>('');
   const [amountIn, setAmountIn] = useState<string>('');
   const [amountOut, setAmountOut] = useState<string>('');
-
+  const { isConnected, address } = useAccount();
+  const { data: allowanceTokenIn } = useCheckAllowance({ tokenAddress: tokenIn.id, ownerAddress: address!, spenderAddress: poolId!, autoRefetch: true })
+  const { data: balanceTokenIn } = useCheckBalance({ tokenAddress: tokenIn.id, accountAddress: address! });
+  const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
+  const [sufficientAllowance, setSufficientAllowance] = useState<boolean>(true);
 
   // Khi dữ liệu pool được tải, thiết lập giá trị ban đầu cho các token
   useEffect(() => {
-    if (data) {
-      setTokenIn(data.pool.token0.symbol);
-      setTokenOut(data.pool.token1.symbol);
-    }
+
   }, [data]);
 
+  useEffect(() => {
+    if (amountIn != "") {
+      setSufficientBalance(parseFloat(balanceTokenIn?.toString() || "0") >= parseUnits(amountIn?.toString() || "0"));
+      setSufficientAllowance(parseFloat(allowanceTokenIn?.toString() || "0") >= parseUnits(amountIn?.toString() || "0"));
+    }
+    else {
+      setSufficientBalance(true);
+      setSufficientAllowance(true);
+    }
+  }, [allowanceTokenIn, balanceTokenIn, amountIn])
   //update lai amountOut moi lan amountIn thay doi
   function calculateAmountOut(amountIn: string) {
     if (amountIn) {
@@ -68,7 +79,7 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       const reserve1 = BigInt(data!.pool.reserve1);
       const amountInWithFee = parseUnits(amountIn) * BigInt(997) / BigInt(1000);
       let amountOut;
-      if (tokenIn == data?.pool.token0.symbol) {
+      if (tokenIn == data?.pool.token0) {
         amountOut = reserve1 * amountInWithFee / (reserve0 + amountInWithFee);
       }
       else {
@@ -83,12 +94,12 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   //update lai amountIn moi lan amountOut thay doi
   function calculateAmountIn(amountOut: string) {
     console.log("amountOut changed to", amountOut);
-    if (amountIn) {
+    if (amountOut) {
       const reserve0 = BigInt(data!.pool.reserve0);
       const reserve1 = BigInt(data!.pool.reserve1);
       let amountIn;
       const _amountOut = parseUnits(amountOut)
-      if (tokenOut == data?.pool.token0.symbol) {
+      if (tokenOut == data?.pool.token0) {
         amountIn = (reserve1 * _amountOut) / (reserve0 - _amountOut);
       }
       else {
@@ -119,18 +130,24 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   };
 
   //check balance token in  
-  const { isConnected, address } = useAccount();
-  const { data: allowance } = useCheckAllowance({ tokenAddress: data!.pool.token0.id, ownerAddress: address!, spenderAddress: poolId!, autoRefetch: true })
-  const { data: balanceTokenIn } = useCheckBalance({ tokenAddress: data!.pool.token0.id, accountAddress: address! });
 
   const { data: hash, isPending, writeContract } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+
+
+
   async function swap() {
+    const tokenInId = token0 == tokenIn ? token0.id : token1.id;
+    console.log(tokenInId);
     try {
       writeContract({
         abi: POOL_ABI,
         address: poolId as Address,
-        functionName : "swap",
-        args: [token0.id, parseUnits(amountIn)]
+        functionName: "swap",
+        args: [tokenInId, parseUnits(amountIn)]
 
       })
     }
@@ -138,24 +155,7 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       console.log(error);
     }
   }
-  const handleSwap = () => {
-    if (amountIn && parseFloat(amount) > 0) {
-      // Tính toán số token nhận được
-      const reserve0 = parseFloat(data!.pool.reserve0);
-      const reserve1 = parseFloat(data!.pool.reserve1);
-      const amountToReceive = (parseFloat(amount) * reserve1) / reserve0;
 
-      message.success(`Swapped ${amount} ${tokenIn} for ${amountToReceive.toFixed(2)} ${tokenOut}`);
-
-      // Đóng modal sau khi swap thành công
-      toggleModal();
-
-      // Làm sạch trường nhập sau khi swap
-      setAmount('');
-    } else {
-      message.error('Please enter a valid amount');
-    }
-  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading pool details</p>;
@@ -182,7 +182,7 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       >
         <Row gutter={16}>
           <Col span={24}>
-            <Title level={4}>Sell: {tokenIn}</Title>
+            <Title level={4}>Sell: {tokenIn.symbol}</Title>
             {/* amoutn out - Sell token */}
             <Input
               value={amountIn}
@@ -190,14 +190,14 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
                 setAmountIn(e.target.value);
                 setAmountOut(calculateAmountOut(e.target.value));
               }}
-              placeholder={`Enter amount of ${tokenIn}`}
+              placeholder={`Enter amount of ${tokenIn.symbol}`}
               type="number"
             />
           </Col>
         </Row>
         <Row gutter={16} style={{ marginTop: 16 }}>
           <Col span={24}>
-            <Title level={4}>Buy: {tokenOut}</Title>
+            <Title level={4}>Buy: {tokenOut.symbol}</Title>
             {/* amoutn out */}
             <Input
               value={amountOut}
@@ -220,27 +220,67 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
               onClick={handleSwapDirection}
               style={{ width: '100%', marginBottom: 16 }}
             >
-              Swap {tokenIn} & {tokenOut}
+              Swap {tokenIn.symbol} & {tokenOut.symbol}
             </Button>
             {!isConnected ? (<ConnectWallet block={true} />)
-              : !(parseFloat(balanceTokenIn?.toString() || "0") >= parseUnits(amountIn?.toString() || "0")) ?
-              (<ApproveERC20Button
-                tokenAddress= {token0.id}
-                spenderAddress = {poolId}
-                amount = {parseUnits(amountIn).toString() }
-                token={token0}
-                />
-              )
-              :<Button
-                type="primary"
-                icon={<SwapOutlined />}
-                size="large"
-                onClick={() => swap()}
-                loading = {isPending}
-                style={{ width: '100%' }}
-              >
-                Swap
-              </Button>}
+              : !sufficientBalance ?
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  danger
+                >
+                  Insufficient Balance
+                </Button>
+                : !sufficientAllowance ?
+                  (<ApproveERC20Button
+                    tokenAddress={tokenIn.id}
+                    spenderAddress={poolId}
+                    amount={(amountIn).toString()}
+                    token={tokenIn}
+                  />
+                  )
+                  : <Button
+                    type="primary"
+                    icon={<SwapOutlined />}
+                    size="large"
+                    onClick={() => swap()}
+                    loading={isPending}
+                    style={{ width: '100%' }}
+                  >
+                    {isPending ? "Confirming" : "Swap"}
+                  </Button>}
+            Allowance: {allowanceTokenIn?.toString()}
+            Balance: {formatUnits(balanceTokenIn?.toString() || "0")}
+            {hash && (
+              <Alert
+                type="info"
+                message={
+                  <>
+                    Transaction Hash: <Text copyable>{hash}</Text>
+                  </>
+                }
+                showIcon
+              />
+            )}
+            {isConfirming && (
+              <Alert
+                type="warning"
+                message="Waiting for confirmation..."
+                showIcon
+                style={{ marginTop: "10px" }}
+              />
+            )}
+
+            {isConfirmed && (
+              <Alert
+                type="success"
+                message="Transaction confirmed."
+                showIcon
+                style={{ marginTop: "10px" }}
+              />
+            )}
 
           </Col>
         </Row>
