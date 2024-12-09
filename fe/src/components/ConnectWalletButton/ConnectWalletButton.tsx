@@ -1,80 +1,57 @@
-import React, { useState } from "react";
-import Web3Modal from "web3modal";
-import { Web3Provider, ExternalProvider} from "@ethersproject/providers";
-import createCoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import { useAuth } from "../../contexts";
-import { EConnectors, EConnectStatus } from "src/constants/web3";
+import { Account, WalletOptions } from "../Layout";
+import { useAccount } from "wagmi";
+import { Modal, Button } from "antd";
+import React, { useState, useEffect } from "react";
+
+interface ConnectWalletProps {
+  size?: 'large' | 'middle' | 'small';
+  block?: boolean;
+}
 
 
-const providerOptions = {
-  coinbaseWallet: {
-    package: createCoinbaseWalletSDK,
-    options: {
-      appName: "Dex",
-      infuraId: "your_infura_project_id", 
-    },
-  },
- 
-};
+export function ConnectWallet({ size = 'middle', block = false }: ConnectWalletProps) {
+  const { isConnected } = useAccount()
+  const [visible, setVisible] = useState(false)
 
-export function ConnectWalletButton () {
-  const [web3Provider, setWeb3Provider] = useState<Web3Provider | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
+  // Hiển thị modal khi người dùng nhấn nút Connect Wallet
+  const showModal = () => {
+    setVisible(true)
+  }
 
-  const connectWallet = async () => {
-    try {
-      const web3Modal = new Web3Modal({
-        cacheProvider: false,
-        providerOptions,
-      });
+  // Đóng modal khi người dùng cancel hoặc close
+  const handleCancel = () => {
+    setVisible(false)
+  }
 
-      // Mở Web3Modal và kết nối với ví
-      const instance = await web3Modal.connect();
-
-      // Tạo provider từ instance đã kết nối
-      const provider = new Web3Provider(instance as ExternalProvider);
-
-      // Yêu cầu người dùng cấp quyền truy cập tài khoản (eth_requestAccounts)
-      await provider.send("eth_requestAccounts", []);
-
-      // Đặt provider cho trạng thái web3Provider
-      setWeb3Provider(provider);
-
-      // Lấy signer và địa chỉ của người dùng
-      const signer = provider.getSigner();
-      const userAddress = await signer.getAddress();
-      setAddress(userAddress);
-    } catch (error) {
-      console.error("Error connecting to wallet:", error);
+  useEffect(() => {
+    if (isConnected) {
+      setVisible(false); // Đảm bảo modal không hiển thị khi disconnect
     }
-  };
-  return (
-    <div>
-      {web3Provider == null ? (
-        <button onClick={connectWallet}>Connect Wallet</button>
-      ) : (
-        <button>{address}</button>
-      )}
-    </div>
-  );
-};
-// WalletConnectButton component to trigger wallet connection
-export const WalletConnectButton = () => {
-  const { address, status, handleConnect, logout } = useAuth();
+  }, [isConnected]);
 
-  const handleButtonClick = () => {
-    console.log(status);
-    if (status === EConnectStatus.CONNECTED) {
-      logout();
-    } else {
-      handleConnect(EConnectors.METAMASK);
-      console.log("handle click");
-    }
-  };
+  // Nếu người dùng đã kết nối, hiển thị Account
+  if (isConnected) {
+    return <Account />
+  }
 
   return (
-    <button className="wallet-button" onClick={handleButtonClick}>
-      {status === EConnectStatus.CONNECTED && address ? `Connected: ${address}` : 'Connect Wallet'}
-    </button>
-  );
-};
+    <>
+      {/* Nút Connect Wallet */}
+      <Button type="primary" onClick={showModal} size={size} block={block}>
+        Connect Wallet
+      </Button>
+
+      {/* Modal chọn ví */}
+      <Modal
+        title="Select a Wallet"
+        open={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width={300}
+
+      >
+        <WalletOptions />
+      </Modal>
+    </>
+  )
+}

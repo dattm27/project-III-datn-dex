@@ -1,7 +1,9 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+import { Table, Skeleton, Typography } from 'antd';
 import { PATHS } from 'src/routes';
+
 const GET_POOLS = gql`
   query {
     pools {
@@ -19,58 +21,109 @@ const GET_POOLS = gql`
   }
 `;
 
+const { Text } = Typography;
+
 export const PoolList: React.FC = () => {
   const { loading, error, data } = useQuery<{ pools: Pool[] }>(GET_POOLS);
   const navigate = useNavigate();
 
   const handleRowClick = (poolId: string) => {
-    const path = PATHS.EXPLORE_POOL.replace(':poolId', poolId); 
-    navigate(path); 
+    const path = PATHS.EXPLORE_POOL.replace(':poolId', poolId);
+    navigate(path);
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  // Placeholder skeleton for loading state
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'index',
+      key: 'index',
+      render: (text: string, record: { index: number }) => <Text>{record.index + 1}</Text>,
+    },
+    {
+      title: 'Pool',
+      dataIndex: 'pair',
+      key: 'pair',
+      render: (text: string, record: { token0: { symbol: string }, token1: { symbol: string } }) => (
+        <Text>{record.token0.symbol} / {record.token1.symbol}</Text>
+      ),
+    },
+    {
+      title: 'TVL (USD)',
+      dataIndex: 'tvl',
+      key: 'tvl',
+      render: () => <Text>$0</Text>,
+    },
+    {
+      title: 'APR (%)',
+      dataIndex: 'apr',
+      key: 'apr',
+      render: () => <Text>N/A</Text>,
+    },
+    {
+      title: '1D Vol (USD)',
+      dataIndex: 'vol1d',
+      key: 'vol1d',
+      render: () => <Text>N/A</Text>,
+    },
+    {
+      title: '30D Vol (USD)',
+      dataIndex: 'vol30d',
+      key: 'vol30d',
+      render: () => <Text>N/A</Text>,
+    },
+    {
+      title: '1D Vol / TVL',
+      dataIndex: 'volTvl',
+      key: 'volTvl',
+      render: () => <Text>N/A</Text>,
+    },
+  ];
+
+  const dataSource = data?.pools.map((pool, index) => ({
+    key: pool.id,
+    index,
+    token0: pool.token0,
+    token1: pool.token1,
+    pair: `${pool.token0.symbol} / ${pool.token1.symbol}`,
+    tvl: 0, 
+    apr: 'N/A',
+    vol1d: 'N/A',
+    vol30d: 'N/A',
+    volTvl: 'N/A',
+  }));
+
+  // Skeleton for placeholder while loading
+  const skeletonColumns = columns.map((col) => ({
+    ...col,
+    render: () => <Skeleton.Input active size="small" style={{ width: '100px' }} />,
+  }));
 
   return (
     <div>
       <h2>Pools</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-        <thead>
-          <tr style={{ backgroundColor: '#f0f0f0', textAlign: 'left' }}>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>#</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>Pool</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>TVL (USD)</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>APR (%)</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>1D Vol (USD)</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>30D Vol (USD)</th>
-            <th style={{ padding: '10px', border: '1px solid #ccc' }}>1D Vol / TVL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.pools.map((pool, index) => (
-            <tr
-              key={pool.id}
-              style={{
-                borderBottom: '1px solid #ccc',
-                cursor: 'pointer', // Thêm con trỏ tay khi hover
-              }}
-              onClick={() => handleRowClick(pool.id)} // Xử lý khi bấm vào hàng
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f0f8ff')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '')}
-            >
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>{index + 1}</td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>
-                {pool.token0.symbol} / {pool.token1.symbol}
-              </td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>$0</td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>N/A</td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>N/A</td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>N/A</td>
-              <td style={{ padding: '10px', border: '1px solid #ccc' }}>N/A</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Render Skeleton if loading */}
+      {loading ? (
+        <Table
+          dataSource={Array(5).fill({})} // 5 rows of skeleton placeholders
+          columns={skeletonColumns}
+          pagination={false}
+          rowClassName="clickable-row"
+          loading={loading}
+        />
+      ) : error ? (
+        <Text type="danger">Error: {error.message}</Text>
+      ) : (
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          pagination={false}
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record.key),
+          })}
+          rowClassName="clickable-row"
+        />
+      )}
     </div>
   );
 };

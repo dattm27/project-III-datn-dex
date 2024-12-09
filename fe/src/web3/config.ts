@@ -1,11 +1,16 @@
-import { RPC_URL } from "src/constants";
+import { RPC_URL,  } from "src/constants";
 import { createConfig, http } from "wagmi";
 import { avalancheFuji } from "wagmi/chains";
-import { injected } from "wagmi/connectors";
+import { injected, metaMask, safe, coinbaseWallet} from "wagmi/connectors";
 
 export const config = createConfig({
   multiInjectedProviderDiscovery: false,
   chains: [avalancheFuji],
-  connectors: [injected()],
+  connectors: [
+
+    metaMask(),
+    coinbaseWallet(),
+    safe(),
+  ],
   transports: { [avalancheFuji.id]: http(RPC_URL) }
 });

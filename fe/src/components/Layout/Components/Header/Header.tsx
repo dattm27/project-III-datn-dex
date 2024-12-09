@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { WalletConnectButton } from 'src/components/ConnectWalletButton';
+
+import {ConnectWallet} from 'src/components/ConnectWalletButton';
 import { PATHS } from 'src/routes';
 import { APP_NAME } from 'src/constants';
 import './styles.scss';
+
 export const Header: React.FC = () => {
     return (
         <nav className="header">
             {/* Logo */}
-            <div className="header__logo">
+            <div className="header__logo" >
+                <img src="src/assets/images/icon.svg" alt="Logo" className="header__logo-icon" />
                 <h1>{APP_NAME}</h1>
             </div>
 
@@ -21,7 +24,7 @@ export const Header: React.FC = () => {
 
             {/* Connect Wallet Button */}
             <div className="header__wallet-button">
-                <WalletConnectButton />
+                <ConnectWallet />
             </div>
         </nav>
     );
