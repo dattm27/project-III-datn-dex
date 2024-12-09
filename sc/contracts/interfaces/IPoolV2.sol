@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 interface IPoolV2 {
    
-    event AddLiquidity(address indexed sender, uint amount0, uint amount1); 
-    event RemoveLiquidity(address indexed sennder, uint amount0, uint amount1);
+    event AddLiquidity(address indexed sender, uint amount0, uint amount1, uint shares); 
+    event RemoveLiquidity(address indexed sennder, uint amount0, uint amount1, uint shares);
     event Swap (
         address indexed sender,
         uint amount0In, 

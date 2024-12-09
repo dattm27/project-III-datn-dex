@@ -60,7 +60,7 @@ contract PoolV2 is IPoolV2 {
     function swap(
         address _tokenIn,
         uint _amountIn
-    ) external nonReentrant returns (uint amountOut) {
+    ) external returns (uint amountOut) {
         require(
             _tokenIn == token0 || _tokenIn == token1,
             "Invalid token"
@@ -130,7 +130,7 @@ contract PoolV2 is IPoolV2 {
     function addLiquidity(
         uint _amount0,
         uint _amount1
-    ) external nonReentrant returns (uint shares) {
+    ) external override returns (uint shares) {
         //x/y = dx / dy
         IERC20(token0).transferFrom(msg.sender, address(this), _amount0);
         IERC20(token1).transferFrom(msg.sender, address(this), _amount1);
@@ -155,12 +155,12 @@ contract PoolV2 is IPoolV2 {
             IERC20(token1).balanceOf(address(this))
         );
 
-        emit AddLiquidity(msg.sender, _amount0, _amount1);
+        emit AddLiquidity(msg.sender, _amount0, _amount1, shares);
     }
 
     function removeLiquidity(
         uint _shares
-    ) external nonReentrant returns (uint amount0, uint amount1) {
+    ) external override returns (uint amount0, uint amount1) {
         uint bal0 = IERC20(token0).balanceOf(address(this));
         uint bal1 = IERC20(token1).balanceOf(address(this));
 
@@ -175,7 +175,7 @@ contract PoolV2 is IPoolV2 {
         IERC20(token0).transfer(msg.sender, amount0);
         IERC20(token1).transfer(msg.sender, amount1);
 
-        emit RemoveLiquidity(msg.sender, amount0, amount1);
+        emit RemoveLiquidity(msg.sender, amount0, amount1, _shares);
         
     }
 
