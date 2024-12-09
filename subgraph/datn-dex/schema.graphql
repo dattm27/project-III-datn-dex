@@ -26,7 +26,8 @@ type Pool @entity(immutable: false) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   
-  liquidityProviders: [LiquidityProvider!]
+  liquidityPositions: [LiquidityPosition!]
+  transactions: [Transaction!] @derivedFrom(field: "pool")
 }
 
 type AddLiquidity @entity(immutable: true) {
@@ -36,17 +37,17 @@ type AddLiquidity @entity(immutable: true) {
   amount1: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  transaction: Transaction!
 }
 
 type RemoveLiquidity @entity(immutable: true) {
   id: Bytes!
-  sennder: Bytes! # address
+  sender: Bytes! # address
   amount0: BigInt! # uint256
   amount1: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  transaction: Transaction!
 }
 
 type Swap @entity(immutable: true) {
@@ -58,7 +59,7 @@ type Swap @entity(immutable: true) {
   amount1Out: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  transaction: Transaction!
 }
 
 type Sync @entity(immutable: true) {
@@ -71,7 +72,7 @@ type Sync @entity(immutable: true) {
 }
 
 
-type LiquidityProvider @entity {
+type LiquidityPosition @entity {
   id: ID!  
   provider: Bytes!  
   pools: [Pool!]  
@@ -79,4 +80,22 @@ type LiquidityProvider @entity {
   token1Amount: BigDecimal!  
   liquidityAmount: BigDecimal!  
   timestamp: BigInt!  
+}
+
+enum TransactionType {
+  ADD_LIQUIDITY
+  REMOVE_LIQUIDITY
+  SWAP
+}
+
+type  Transaction @entity (immutable: true) {
+  id:Bytes!
+  type: TransactionType!
+  blockNumber: BigInt!
+  timestamp: BigInt!  
+  sender: Bytes! 
+  pool: Pool!
+  swap: Swap @derivedFrom(field: "transaction") 
+  mint: AddLiquidity @derivedFrom(field: "transaction") 
+  burn: RemoveLiquidity @derivedFrom(field: "transaction") 
 }

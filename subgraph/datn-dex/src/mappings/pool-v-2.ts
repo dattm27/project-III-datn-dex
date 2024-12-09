@@ -4,91 +4,110 @@ import {
   Swap as SwapEvent,
   Sync as SyncEvent,
 } from "../../generated/templates/PoolV2/PoolV2"
-import { AddLiquidity, LiquidityProvider, Pool, RemoveLiquidity, Swap, Sync } from "../../generated/schema"
+import { AddLiquidity, Pool, RemoveLiquidity, Swap, Sync, Transaction } from "../../generated/schema"
+import { BigInt, Bytes } from "@graphprotocol/graph-ts"
 
 export function handleAddLiquidity(event: AddLiquidityEvent): void {
-  let entity = new AddLiquidity(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.sender = event.params.sender
-  entity.amount0 = event.params.amount0
-  entity.amount1 = event.params.amount1
+  let id = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let addLiquidity = new AddLiquidity(id)
+  addLiquidity.sender = event.params.sender
+  addLiquidity.amount0 = event.params.amount0
+  addLiquidity.amount1 = event.params.amount1
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  addLiquidity.blockNumber = event.block.number
+  addLiquidity.blockTimestamp = event.block.timestamp
 
-  entity.save()
+
+  //create transaction
+  let transaction = new Transaction(id)
+  transaction.type = "ADD_LIQUIDITY";
+  transaction.blockNumber = event.block.number;
+  transaction.timestamp = event.block.timestamp;
+  transaction.sender = event.params.sender;
+  transaction.pool = event.address.toHex();
+
+  addLiquidity.transaction = transaction.id;
+
+  transaction.save()
+  addLiquidity.save()
 
   let pool = Pool.load(event.address.toString())
-  if (pool == null) return ;
-  //add AddLiquidity object to Pool
- 
-
-  
-  //update pool reserves
-  pool.reserve0 =   pool.reserve0.plus(event.params.amount0);
-  pool.reserve1 =   pool.reserve1.plus(event.params.amount1);
-  pool.save();
-  //update liquidity provider shares
-  // let lp  = LiquidityProvider.load()
-
+  if (pool) {
+    //update pool reserves
+    pool.reserve0 = pool.reserve0.plus(event.params.amount0);
+    pool.reserve1 = pool.reserve1.plus(event.params.amount1);
+    pool.save();
+    //update liquidity provider shares
+  }
 }
 
+
 export function handleRemoveLiquidity(event: RemoveLiquidityEvent): void {
-  let entity = new RemoveLiquidity(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.sennder = event.params.sennder
-  entity.amount0 = event.params.amount0
-  entity.amount1 = event.params.amount1
+  let id = event.transaction.hash.concatI32(event.logIndex.toI32());
+  let removeLiquidity = new RemoveLiquidity(id)
+  removeLiquidity.sender = event.params.sennder
+  removeLiquidity.amount0 = event.params.amount0
+  removeLiquidity.amount1 = event.params.amount1
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  removeLiquidity.blockNumber = event.block.number
+  removeLiquidity.blockTimestamp = event.block.timestamp
+  
+  //create transaction
+  let transaction = new Transaction(id)
+  transaction.type = "REMOVE_LIQUIDITY";
+  transaction.blockNumber = event.block.number;
+  transaction.timestamp = event.block.timestamp;
+  transaction.sender = event.params.sennder;
+  transaction.pool = event.address.toHex();
 
-  entity.save()
+  removeLiquidity.transaction = transaction.id;
+  
+  removeLiquidity.save()
+  transaction.save()
+
 
   let pool = Pool.load(event.address.toString())
-  if (pool == null) return ;
-  //add RemoveLuidity object to Pool
-
-  //update pool reserves
-  pool.reserve0 =   pool.reserve0.minus(event.params.amount0);
-  pool.reserve1 =   pool.reserve1.minus(event.params.amount1);
-  pool.save();
-
-  //update liquidity provider shares
-
+  if (pool) {
+    //update pool reserves
+    pool.reserve0 = pool.reserve0.minus(event.params.amount0);
+    pool.reserve1 = pool.reserve1.minus(event.params.amount1);
+    pool.save();
+  }
 }
 
 export function handleSwap(event: SwapEvent): void {
-  let entity = new Swap(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.sender = event.params.sender
-  entity.amount0In = event.params.amount0In
-  entity.amount1In = event.params.amount1In
-  entity.amount0Out = event.params.amount0Out
-  entity.amount1Out = event.params.amount1Out
+  let id = event.transaction.hash.concatI32(event.logIndex.toI32());
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  let swap = new Swap(id)
+  swap.sender = event.params.sender
+  swap.amount0In = event.params.amount0In
+  swap.amount1In = event.params.amount1In
+  swap.amount0Out = event.params.amount0Out
+  swap.amount1Out = event.params.amount1Out
 
-  entity.save()
+  swap.blockNumber = event.block.number
+  swap.blockTimestamp = event.block.timestamp
+
+  //create transaction
+  let transaction = new Transaction(id)
+  transaction.type = "SWAP";
+  transaction.blockNumber = event.block.number;
+  transaction.timestamp = event.block.timestamp;
+  transaction.sender = event.params.sender;
+  transaction.pool = event.address.toHex();
+
+  swap.transaction = transaction.id;
+  
+  swap.save()
+  transaction.save()
 
   let pool = Pool.load(event.address.toString())
-  if (pool == null) return ;
-  //add Swap object to Pool
-
-
-  //update pool reserves
-  pool.reserve0 = pool.reserve0.plus(event.params.amount0In).minus(event.params.amount0Out);
-  pool.reserve1 = pool.reserve1.plus(event.params.amount1In).minus(event.params.amount1Out);
-
-
-  pool.save();
+  if (pool) {
+    //update pool reserves
+    pool.reserve0 = pool.reserve0.plus(event.params.amount0In).minus(event.params.amount0Out);
+    pool.reserve1 = pool.reserve1.plus(event.params.amount1In).minus(event.params.amount1Out);
+    pool.save();
+  }
 }
 
 export function handleSync(event: SyncEvent): void {
@@ -105,12 +124,12 @@ export function handleSync(event: SyncEvent): void {
   entity.save()
 
   let pool = Pool.load(event.address.toHex());
-  if (!pool) return;
+  if (pool) {
+    // Update pool reserves
+    pool.reserve0 = event.params.reserve0;
+    pool.reserve1 = event.params.reserve1;
 
-  // Update pool reserves
-  pool.reserve0 = event.params.reserve0;
-  pool.reserve1 = event.params.reserve1;
-
-  pool.save();
+    pool.save();
+  }
 
 }
