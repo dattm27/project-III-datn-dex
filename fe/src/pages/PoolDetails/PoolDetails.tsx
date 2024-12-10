@@ -26,7 +26,6 @@ export const PoolDetails: React.FC = () => {
       const offset = (currentPage - 1) * 20;
       const limit = 20;
       const transactions = await getTransactionHistory(poolId!, { offset, limit });
-      console.log('transactions', transactions);
       setTransactionHistories(transactions);
       // Giả định subgraph có API trả về tổng số giao dịch
       setTotal(100); // Thay bằng số thực từ backend
@@ -71,55 +70,6 @@ export const PoolDetails: React.FC = () => {
   //   );
   // }
   if (error) return <p>Error: {error.message}</p>;
-
-
-  const transactionHistoryData = [
-    {
-      key: '1',
-      time: '2024-11-29 10:00',
-      type: 'Sell Token0 (DT0)',
-      usd: '$1000',
-      token0: pool?.token0.symbol,
-      token1: pool?.token1.symbol,
-      wallet: '0x1234567890abcdef',
-    },
-    {
-      key: '2',
-      time: '2024-11-29 11:00',
-      type: 'Buy Token1 (DT1)',
-      usd: '$1200',
-      token0: pool?.token0.symbol,
-      token1: pool?.token1.symbol,
-      wallet: '0xabcdef1234567890',
-    },
-    {
-      key: '3',
-      time: '2024-11-29 12:00',
-      type: 'Add Liquidity',
-      usd: '$500',
-      token0: pool?.token0.symbol,
-      token1: pool?.token1.symbol,
-      wallet: '0x7890abcdef123456',
-    },
-  ];
-
-  const columns = [
-    { title: 'Time', dataIndex: 'time', key: 'time' },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (text: string) => {
-        const color = text.includes('Sell') ? 'red' : text.includes('Buy') || text.includes('Add') ? 'green' : '';
-        return <span style={{ color }}>{text}</span>;
-      },
-    },
-    { title: 'USD', dataIndex: 'usd', key: 'usd' },
-    { title: pool?.token0.symbol, dataIndex: 'token0', key: 'token0' },
-    { title: pool?.token1.symbol, dataIndex: 'token1', key: 'token1' },
-    { title: 'Wallet', dataIndex: 'wallet', key: 'wallet' },
-  ];
-
   if (pool != null)
   {
     return (

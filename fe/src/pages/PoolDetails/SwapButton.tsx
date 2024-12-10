@@ -127,9 +127,12 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
 
 
   async function swap() {
-    const tokenInId = token0 == tokenIn ? token0.id : token1.id;
-    console.log(tokenInId);
+    const tokenInId = token0.id == tokenIn.id ? token0.id : token1.id;
+    console.log( 'token0' , token0);
+    console.log( 'tokenIn', tokenIn);
+    console.log('tokenIn', tokenInId);
     try {
+      console.log('poolId:', poolId);
       writeContract({
         abi: POOL_ABI,
         address: poolId as Address,

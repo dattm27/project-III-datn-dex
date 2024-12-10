@@ -1,4 +1,5 @@
-import { Empty } from 'antd';
+import { Empty, Table, Pagination } from 'antd';
+import { formatUnits } from 'ethers';
 export type TransactionHistoryTableProps = {
     transactionHistories: TransactionHistory[];
     total: number;
@@ -14,63 +15,81 @@ const TransactionHistoryTable: React.FC<TransactionHistoryTableProps> = ({
     loading
 }) => {
     if (!total) return (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />);
-    const totalPages = Math.ceil(total / 20); 
-    return (
+    const columns = [
+        {
+          title: "Timestamp",
+          dataIndex: "timestamp",
+          key: "timestamp",
+          render: (timestamp: string) =>
+            new Date(Number(timestamp) * 1000).toLocaleString(),
+        },
+        {
+          title: "Type",
+          dataIndex: "type",
+          key: "type",
+        },
+        {
+          title: "Amount0",
+          key: "amount0",
+          render: (record: TransactionHistory) => {
+            const { mint, burn, swap } = record;
+            let amount: string = "0";
+            if (mint) amount = mint.amount0;
+            if (burn) amount = burn.amount0;
+            if (swap) {
+                if (swap.amount0In != '0') amount = swap.amount0In 
+                if (swap.amount0Out != '0') amount = swap.amount0Out
+            }
+            if (amount != '0') {
+                const roundedAmount = parseFloat(formatUnits(amount)).toFixed(5);
+                return parseFloat(roundedAmount).toString();
+            }
+        
+            return "-";
+          },
+        },
+        {
+          title: "Amount1",
+          key: "amount1",
+          render: (record: TransactionHistory) => {
+            const { mint, burn, swap } = record;
+            let amount: string = "0";
+            if (mint) amount = mint.amount1;
+            if (burn) amount = burn.amount1;
+            if (swap) {
+                if (swap.amount1In != '0') amount = swap.amount1In 
+                if (swap.amount1Out != '0') amount =  swap.amount1Out
+            }
+            if (amount != '0') {
+                const roundedAmount = parseFloat(formatUnits(amount)).toFixed(5);
+                return parseFloat(roundedAmount).toString();
+            }
+            return "-";
+          },
+        },
+        {
+          title: "Sender",
+          dataIndex: "sender",
+          key: "sender",
+        },
+      ];
+    
+      return (
         <div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Sender</th>
-                <th>Block Number</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5}>Loading...</td>
-                </tr>
-              ) : transactionHistories.length > 0 ? (
-                transactionHistories.map((tx) => (
-                  <tr key={tx.id}>
-                    <td>{tx.id}</td>
-                    <td>{tx.type}</td>
-                    <td>{tx.sender}</td>
-                    <td>{tx.blockNumber}</td>
-                    <td>{new Date(Number(tx.timestamp) * 1000).toLocaleString()}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5}>No transactions found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-          {/* Pagination */}
-          <div style={{ marginTop: "10px" }}>
-            {Array.from({ length: totalPages }).map((_, index) => {
-              const pageIndex = index + 1;
-              return (
-                <button
-                  key={pageIndex}
-                  onClick={() => onPageChange && onPageChange(pageIndex)}
-                  style={{
-                    margin: "0 5px",
-                    padding: "5px 10px",
-                    backgroundColor: pageIndex === page ? "#007bff" : "#f8f9fa",
-                    color: pageIndex === page ? "#fff" : "#000",
-                    border: "1px solid #ddd",
-                    cursor: "pointer",
-                  }}
-                >
-                  {pageIndex}
-                </button>
-              );
-            })}
-          </div>
+          <Table
+            columns={columns}
+            dataSource={transactionHistories}
+            loading={loading}
+            pagination={false} // Disable default pagination
+            rowKey="id" // Set unique key for rows
+          />
+          <Pagination
+            current={page}
+            total={total}
+            pageSize={10} // Show 10 records per page
+            onChange={(page) => onPageChange &&  onPageChange(page)}
+            style={{ marginTop: 16, textAlign: "center" }}
+          />
         </div>
       );
 }
