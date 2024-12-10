@@ -1,20 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Button, Card, Typography, Row, Col, Breadcrumb, Skeleton, Table } from 'antd';
+import { Button, Card, Typography, Row, Col, Breadcrumb, Skeleton } from 'antd';
 import { DotChartOutlined } from '@ant-design/icons';
 import { SwapButton } from './SwapButton';
 import { formatUnits } from 'ethers';
 import { PATHS } from 'src/routes';
 import { getPoolDetails } from 'src/services';
 const { Text, Title } = Typography;
-
-
+import { getTransactionHistory } from 'src/services';
+import TransactionHistoryTable from './TransactionHistoryTable';
 export const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
   const navigate = useNavigate();
   const [pool, setPool] = useState<Pool|null>(null);
   const [loading, setLoading] = useState(false); // State for loading
   const [error, setError] = useState<Error | null>(null); // State for error
+  const [transactionHistories, setTransactionHistories] = useState<TransactionHistory[]>([]);
+  const [total, setTotal] = useState(0); // Tổng số giao dịch
+  const [page, setPage] = useState(1); // Trang hiện tại
+
+
+  const fetchTransactionHistory = async (currentPage: number) => {
+    setLoading(true);
+    try {
+      const offset = (currentPage - 1) * 20;
+      const limit = 20;
+      const transactions = await getTransactionHistory(poolId!, { offset, limit });
+      console.log('transactions', transactions);
+      setTransactionHistories(transactions);
+      // Giả định subgraph có API trả về tổng số giao dịch
+      setTotal(100); // Thay bằng số thực từ backend
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactionHistory(page);
+  }, [page]);
 
   
   useEffect(() => {
@@ -98,8 +123,7 @@ export const PoolDetails: React.FC = () => {
   if (pool != null)
   {
     return (
-      <div style={{ padding: '20px' }}>
-        {/* Breadcrumb */}
+      <div >
         <Breadcrumb style={{ marginBottom: '20px' }}>
           <Breadcrumb.Item>
             <Link to={PATHS.EXPLORE}>Explore</Link>
@@ -112,7 +136,6 @@ export const PoolDetails: React.FC = () => {
           <Breadcrumb.Item>{poolId}</Breadcrumb.Item>
         </Breadcrumb>
   
-        {/* Title */}
         <Title level={1}>
           {pool?.token0.symbol}/{pool?.token1.symbol}: Buy and Sell
         </Title>
@@ -134,11 +157,12 @@ export const PoolDetails: React.FC = () => {
   
             <Card title="Transaction History" bordered={false} style={{ marginTop: '20px' }}>
               <Skeleton active loading={loading} paragraph={{ rows: 8 }} />
-              <Table
-                dataSource={transactionHistoryData}
-                columns={columns}
-                pagination={false}
-                size="small"
+              <TransactionHistoryTable
+                transactionHistories={transactionHistories}
+                total={total}
+                page={page}
+                onPageChange={setPage}
+                loading={loading}
               />
             </Card>
           </Col>

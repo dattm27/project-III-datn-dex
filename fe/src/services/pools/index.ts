@@ -1,6 +1,11 @@
 import request, { gql } from "graphql-request";
 import { API_URL_SUB_GRAPH } from "src/constants";
 
+export type PageAble = {
+  offset: number;
+  limit: number;
+};
+
 const endpoint = API_URL_SUB_GRAPH;
 export async function getTokens(): Promise<Token[]> {
     const query = gql`
@@ -65,4 +70,38 @@ export async function getPoolDetails(id: string): Promise<Pool> {
     `
     const res = await request<{ pool: Pool }>(endpoint, query);
     return res.pool;
+}
+
+export async function getTransactionHistory(
+  pool: string,
+  {offset, limit}: PageAble = {offset : 0, limit : 20}
+): Promise<TransactionHistory []>{
+  const query = gql`{
+    transactions(where: { pool: "${pool}" }, first: ${limit}, skip: ${offset}
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      id
+      type
+      sender
+      mint {
+        amount0
+        amount1
+      }
+      swap {
+        amount0In
+        amount0Out
+        amount1In
+        amount1Out
+      }
+      burn {
+        amount0
+        amount1
+      }
+      blockNumber
+      timestamp
+    }
+  }`
+  const res = await request<{transactions: TransactionHistory []}>(endpoint, query);
+  return res.transactions;
 }
