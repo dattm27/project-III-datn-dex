@@ -292,6 +292,7 @@ export const AddLiquidity: React.FC = () => {
         )}
 
       </Form>
+      Balance 0: {balance0?.toString()}
     </div>
   );
 };

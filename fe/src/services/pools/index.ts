@@ -42,14 +42,16 @@ export async function getPools(): Promise<Pool[]> {
 export async function getPoolDetails(id: string): Promise<Pool> {
     const query = gql`
     {
-    pools(where: {id: "${id}"}) {
+    pool(id: "${id}") {
       id
       token0 {
+        id
         name
         symbol
         decimals
       }
       token1 {
+        id
         name
         symbol
         decimals
@@ -61,6 +63,6 @@ export async function getPoolDetails(id: string): Promise<Pool> {
     }
     }
     `
-    const res = await request<{ pools: Pool }>(endpoint, query);
-    return res.pools;
+    const res = await request<{ pool: Pool }>(endpoint, query);
+    return res.pool;
 }

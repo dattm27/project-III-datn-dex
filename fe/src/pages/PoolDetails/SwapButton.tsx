@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Input, Row, Col, Typography, message, Alert } from 'antd';
+import { Button, Modal, Input, Row, Col, Typography, Alert } from 'antd';
 import { SwapOutlined, CloseOutlined } from '@ant-design/icons';
-import { useQuery, gql } from '@apollo/client';
 import { formatUnits, parseUnits } from 'ethers';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { ConnectWallet } from 'src/components/ConnectWalletButton';
@@ -10,28 +9,8 @@ import { ApproveERC20Button } from '../AddLiquidity/ApproveERC20TokenButton';
 import { Address } from 'viem';
 const { Title, Text } = Typography;
 import { POOL_ABI } from 'src/web3/abis';
+import { getPoolDetails } from 'src/services';
 
-const GET_POOL_DETAIL = gql`
-  query GetPool($id: String!) {
-    pool(id: $id) {
-      id
-      token0 {
-        id
-        name
-        symbol
-        decimals
-      }
-      token1 {
-        id
-        name
-        symbol
-        decimals
-      }
-      reserve0
-      reserve1
-    }
-  }
-`;
 
 interface SwapButtonProps {
   poolId: string;  // ID của pool
@@ -41,14 +20,10 @@ interface SwapButtonProps {
 }
 
 export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }) => {
-  const { loading, error, data } = useQuery<{ pool: Pool }>(GET_POOL_DETAIL, {
-    variables: { id: poolId },
-  });
-
   const [modalVisible, setModalVisible] = useState(false);
+  const [pool, setPool] = useState<Pool | null>(null);
   const [tokenIn, setTokenIn] = useState<Token>(token0); //token in
   const [tokenOut, setTokenOut] = useState<Token>(token1);
-  const [amount, setAmount] = useState<string>('');
   const [amountIn, setAmountIn] = useState<string>('');
   const [amountOut, setAmountOut] = useState<string>('');
   const { isConnected, address } = useAccount();
@@ -57,10 +32,22 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
   const [sufficientAllowance, setSufficientAllowance] = useState<boolean>(true);
 
-  // Khi dữ liệu pool được tải, thiết lập giá trị ban đầu cho các token
   useEffect(() => {
-
-  }, [data]);
+    const exec = async () => {
+      try {
+        const pool = await getPoolDetails(poolId);
+        setPool(pool);
+        console.log(pool.token0, pool.token1);
+        console.log(pool.token0.id);
+        setTokenIn(pool.token0);
+        setTokenOut(pool.token1);
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+      exec();
+    }, []);
 
   useEffect(() => {
     if (amountIn != "") {
@@ -75,11 +62,11 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   //update lai amountOut moi lan amountIn thay doi
   function calculateAmountOut(amountIn: string) {
     if (amountIn) {
-      const reserve0 = BigInt(data!.pool.reserve0);
-      const reserve1 = BigInt(data!.pool.reserve1);
+      const reserve0 = BigInt(pool?.reserve0 || "0");
+      const reserve1 = BigInt(pool?.reserve1 || "0");
       const amountInWithFee = parseUnits(amountIn) * BigInt(997) / BigInt(1000);
       let amountOut;
-      if (tokenIn == data?.pool.token0) {
+      if (tokenIn == pool!.token0) {
         amountOut = reserve1 * amountInWithFee / (reserve0 + amountInWithFee);
       }
       else {
@@ -95,11 +82,11 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   function calculateAmountIn(amountOut: string) {
     console.log("amountOut changed to", amountOut);
     if (amountOut) {
-      const reserve0 = BigInt(data!.pool.reserve0);
-      const reserve1 = BigInt(data!.pool.reserve1);
+      const reserve0 = BigInt(pool?.reserve0 || "0");
+      const reserve1 = BigInt(pool?.reserve1 || "0");
       let amountIn;
       const _amountOut = parseUnits(amountOut)
-      if (tokenOut == data?.pool.token0) {
+      if (tokenOut == pool!.token0) {
         amountIn = (reserve1 * _amountOut) / (reserve0 - _amountOut);
       }
       else {
@@ -157,8 +144,8 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
   }
 
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading pool details</p>;
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error loading pool details</p>;
 
   return (
     <>
@@ -175,7 +162,7 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       {/* Modal for Swap */}
       <Modal
         title="Swap Tokens"
-        visible={modalVisible}
+        open={modalVisible}
         onCancel={toggleModal}
         footer={null}
         width={500}
