@@ -37,14 +37,20 @@ describe("PoolV2", function () {
     describe("Adding Liquidity", function () {
         it("Should add liquidity and mint LP shares", async function () {
             const { pool, token0, token1, owner, otherAccount } = await loadFixture(deployPoolV2Fixture);
+            // await token0.mint(otherAccount.address, parseUnits("100000"));
             await token0.mint(otherAccount.address, parseUnits("100000"));
+
             await token1.mint(otherAccount.address, parseUnits("100000"));
-            await token0.connect(otherAccount).approve(await pool.getAddress(), parseUnits("10000"));
-            await token1.connect(otherAccount).approve(await pool.getAddress(), parseUnits("10")); 
+            await token0.connect(otherAccount).approve(await pool.getAddress(), 1367513142738512720971n);
+            await token1.connect(otherAccount).approve(await pool.getAddress(), 1211576957754222899802n); 
+            console.log(parseUnits("1"));
+            console.log(1211576957754222899802n*parseUnits("1")/1367513142738512720971n)
             await pool.connect(otherAccount).addLiquidity(parseUnits("10000"), parseUnits("10"));  //add 10000 DAI, 10 ETH to pool
 
             expect(await pool.totalSupply()).to.be.gt(0);
-            expect(await pool.balanceOf(owner.address)).to.be.gt(0);
+            console.log ('pool balance', await pool.balanceOf(owner.address));
+            expect(await pool.balanceOf(otherAccount.address)).to.be.gt(0);
+         
         });
     });
 
