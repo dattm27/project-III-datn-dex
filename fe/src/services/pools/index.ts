@@ -28,10 +28,12 @@ export async function getPools(): Promise<Pool[]> {
         pools {
           id
           token0 {
+            id
             name
             symbol
           }
           token1 {
+            id
             name
             symbol
           }

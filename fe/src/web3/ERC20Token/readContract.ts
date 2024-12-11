@@ -44,8 +44,6 @@ export const useCheckBalance = ({
     useEffect (()=>{
         if(blockNumber){
             refetch();
-            console.log('token:', tokenAddress, 'account: ', accountAddress);
-         
         }
     }, [blockNumber])
     return {data, isLoading, error};
