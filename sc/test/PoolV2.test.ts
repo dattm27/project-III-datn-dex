@@ -45,8 +45,8 @@ describe("PoolV2", function () {
             await token1.connect(otherAccount).approve(await pool.getAddress(), 1211576957754222899802n); 
             console.log(parseUnits("1"));
             console.log(1211576957754222899802n*parseUnits("1")/1367513142738512720971n)
-            await pool.connect(otherAccount).addLiquidity(parseUnits("10000"), parseUnits("10"));  //add 10000 DAI, 10 ETH to pool
-
+            await pool.connect(otherAccount).addLiquidity(1367513142738512720971n,1211576957754222899802n );  //add 10000 DAI, 10 ETH to pool
+            console.log(await pool.getAmount1ToAdd(parseUnits("1") ));
             expect(await pool.totalSupply()).to.be.gt(0);
             console.log ('pool balance', await pool.balanceOf(owner.address));
             expect(await pool.balanceOf(otherAccount.address)).to.be.gt(0);
