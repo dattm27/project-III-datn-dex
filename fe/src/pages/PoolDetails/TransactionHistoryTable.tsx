@@ -1,6 +1,7 @@
 import { Empty, Table, Pagination } from 'antd';
 import { formatUnits } from 'ethers';
 export type TransactionHistoryTableProps = {
+    pool: Pool
     transactionHistories: TransactionHistory[];
     total: number;
     onPageChange?: (page: number) => void;
@@ -8,7 +9,8 @@ export type TransactionHistoryTableProps = {
     loading: boolean;
 };
 const TransactionHistoryTable: React.FC<TransactionHistoryTableProps> = ({
-    transactionHistories,
+  pool,  
+  transactionHistories,
     total,
     onPageChange,
     page,
@@ -27,9 +29,29 @@ const TransactionHistoryTable: React.FC<TransactionHistoryTableProps> = ({
           title: "Type",
           dataIndex: "type",
           key: "type",
+          render: (type: string, record: TransactionHistory) => {
+            let color = "red";
+            let text;
+            if(type === "ADD_LIQUIDITY") {
+              text = "Add";
+              color = "green";
+            }
+            if (type === "REMOVE_LIQUIDITY") text = "Remove";
+            if (type === "SWAP") {
+              const { swap } = record;
+              if (swap?.amount0Out !== "0") {
+                text = `Buy ${pool?.token0?.symbol || "Token0"}`;
+                color= "green"
+              } else {
+                text = `Sell ${pool?.token0?.symbol || "Token0"}`;
+              }
+            }
+            return <span style={{ color }}>{text}</span>
+          }
+
         },
         {
-          title: "Amount0",
+          title:`${pool?.token0?.symbol || "Amount0"}`,
           key: "amount0",
           render: (record: TransactionHistory) => {
             const { mint, burn, swap } = record;
@@ -49,7 +71,7 @@ const TransactionHistoryTable: React.FC<TransactionHistoryTableProps> = ({
           },
         },
         {
-          title: "Amount1",
+          title: `${pool?.token1?.symbol || "Amount0"}`,
           key: "amount1",
           render: (record: TransactionHistory) => {
             const { mint, burn, swap } = record;
@@ -68,20 +90,25 @@ const TransactionHistoryTable: React.FC<TransactionHistoryTableProps> = ({
           },
         },
         {
-          title: "Sender",
+          title: "Wallet",
           dataIndex: "sender",
-          key: "sender",
+          key: "wallet",
+          render : (sender: string) => {
+            const prefix = sender.slice(0,4);
+            const suffix = sender.slice(-3);
+            return `${prefix}...${suffix}`;
+          }
         },
-      ];
-    
+      ];  
       return (
         <div>
           <Table
             columns={columns}
             dataSource={transactionHistories}
             loading={loading}
-            pagination={false} // Disable default pagination
-            rowKey="id" // Set unique key for rows
+            pagination={false} 
+            rowKey={(record) => record.id}
+            scroll={{y: 400}}
           />
           <Pagination
             current={page}

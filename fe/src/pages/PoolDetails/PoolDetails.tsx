@@ -106,8 +106,9 @@ export const PoolDetails: React.FC = () => {
             </Card>
   
             <Card title="Transaction History" bordered={false} style={{ marginTop: '20px' }}>
-              <Skeleton active loading={loading} paragraph={{ rows: 8 }} />
+              {/* <Skeleton active loading={loading} paragraph={{ rows: 8 }} /> */}
               <TransactionHistoryTable
+                pool={pool}
                 transactionHistories={transactionHistories}
                 total={total}
                 page={page}
