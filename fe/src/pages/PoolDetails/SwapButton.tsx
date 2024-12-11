@@ -46,8 +46,8 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
         console.log(error);
       }
     }
-      exec();
-    }, []);
+    exec();
+  }, []);
 
   useEffect(() => {
     if (amountIn != "") {
@@ -59,6 +59,10 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       setSufficientAllowance(true);
     }
   }, [allowanceTokenIn, balanceTokenIn, amountIn])
+
+
+
+
   //update lai amountOut moi lan amountIn thay doi
   function calculateAmountOut(amountIn: string) {
     if (amountIn) {
@@ -125,11 +129,17 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
     });
 
 
+  useEffect(() => {
+    if (isConfirmed) {
+      setAmountIn('');
+      setAmountOut('');
+    }
+  }, [isConfirmed]);
 
   async function swap() {
     const tokenInId = token0.id == tokenIn.id ? token0.id : token1.id;
-    console.log( 'token0' , token0);
-    console.log( 'tokenIn', tokenIn);
+    console.log('token0', token0);
+    console.log('tokenIn', tokenIn);
     console.log('tokenIn', tokenInId);
     try {
       console.log('poolId:', poolId);
