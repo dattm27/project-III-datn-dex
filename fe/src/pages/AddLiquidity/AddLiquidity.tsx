@@ -9,8 +9,10 @@ import { POOL_ABI } from "src/web3/abis";
 import { Address } from "viem";
 import { useCheckAllowance, useCheckBalance } from "src/web3/ERC20Token/readContract";
 import { ApproveERC20Button } from "./ApproveERC20TokenButton";
+import { EXPLORER_BASE_URL } from "src/constants";
 const { Option } = Select;
 const { Text } = Typography;
+
 
 export const AddLiquidity: React.FC = () => {
   const location = useLocation();
@@ -65,11 +67,11 @@ export const AddLiquidity: React.FC = () => {
     }
   }, [token0, token1, pools]);
 
-  const { data: allowance0 } = useCheckAllowance({ tokenAddress: token0!.id, ownerAddress: address!, spenderAddress: poolId!, autoRefetch: true})
+  const { data: allowance0 } = useCheckAllowance({ tokenAddress: token0!.id, ownerAddress: address!, spenderAddress: poolId!, autoRefetch: true })
   const { data: allowance1 } = useCheckAllowance({ tokenAddress: token1!.id, ownerAddress: address!, spenderAddress: poolId!, autoRefetch: true })
   const { data: balance1 } = useCheckBalance({ tokenAddress: token1!.id, accountAddress: address! });
   const { data: balance0 } = useCheckBalance({ tokenAddress: token0!.id, accountAddress: address! });
-  
+
   //to improve: debouncing 
   const calculateAmount1 = (amount0: string) => {
     if (selectedPool && amount0) {
@@ -105,7 +107,7 @@ export const AddLiquidity: React.FC = () => {
     if (token0Amount && token1Amount) {
       const amount0Parsed = parseFloat(token0Amount);
       const amount1Parsed = parseFloat(token1Amount);
-  
+
       if (allowance0 !== undefined && allowance1 !== undefined) {
         // Kiểm tra allowance
         setSufficientAllowance0(parseFloat(allowance0!.toString() || "0") >= parseUnits(amount0Parsed.toString()));
@@ -113,7 +115,7 @@ export const AddLiquidity: React.FC = () => {
       }
     }
   }, [allowance0, allowance1, token0Amount, token1Amount]);
-  
+
 
   const { data: hash, isPending, writeContract: addLiquidity } = useWriteContract();
   const handleAddLiquidity = async () => {
@@ -128,13 +130,13 @@ export const AddLiquidity: React.FC = () => {
       console.error("Transaction failed:", error);
     }
   };
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
     });
 
-  
+
 
 
   // reset token amount after transaction is confirmed
@@ -193,7 +195,7 @@ export const AddLiquidity: React.FC = () => {
               required
               onChange={(e) => {
                 setToken0Amount(e.target.value);
-              
+
                 // avoid divide by 0 
                 if (parseFloat(selectedPool!.reserve1)) setToken1Amount(calculateAmount1(e.target.value));
               }}
@@ -230,21 +232,21 @@ export const AddLiquidity: React.FC = () => {
           )
             : !sufficientAllowance0 ?
               (
-               <ApproveERC20Button
-                tokenAddress={token0!.id}
-                spenderAddress={selectedPool!.id}
-                amount = { (parseFloat(token0Amount)).toString() }
-                token={token0!}
-               />
+                <ApproveERC20Button
+                  tokenAddress={token0!.id}
+                  spenderAddress={selectedPool!.id}
+                  amount={(parseFloat(token0Amount)).toString()}
+                  token={token0!}
+                />
               )
               : !sufficientAllowance1 ?
                 (
                   <ApproveERC20Button
-                  tokenAddress={token1!.id}
-                  spenderAddress={selectedPool!.id}
-                  amount = { (parseFloat(token1Amount)).toString() }
-                  token={token1!}
-                 />
+                    tokenAddress={token1!.id}
+                    spenderAddress={selectedPool!.id}
+                    amount={(parseFloat(token1Amount)).toString()}
+                    token={token1!}
+                  />
                 )
                 : (
                   <Button
@@ -285,7 +287,18 @@ export const AddLiquidity: React.FC = () => {
         {isConfirmed && (
           <Alert
             type="success"
-            message="Transaction confirmed."
+            message={
+              <>
+                Transaction confirmed.
+                <a
+                  href={`${EXPLORER_BASE_URL}/${hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on Block Explorer
+                </a>
+
+              </>}
             showIcon
             style={{ marginTop: "10px" }}
           />

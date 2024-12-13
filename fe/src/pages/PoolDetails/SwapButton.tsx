@@ -10,6 +10,7 @@ import { Address } from 'viem';
 const { Title, Text } = Typography;
 import { POOL_ABI } from 'src/web3/abis';
 import { getPoolDetails } from 'src/services';
+import { EXPLORER_BASE_URL } from 'src/constants';
 
 
 interface SwapButtonProps {
@@ -259,7 +260,9 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
                 message={
                   <>
                     Transaction Hash: <Text copyable>{hash}</Text>
+
                   </>
+
                 }
                 showIcon
               />
@@ -276,7 +279,20 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
             {isConfirmed && (
               <Alert
                 type="success"
-                message="Transaction confirmed."
+                message={
+                  <>
+                    Transaction confirmed.
+                    <a
+                      href={`${EXPLORER_BASE_URL}/${hash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View on Block Explorer
+                    </a>
+
+                  </>
+
+                }
                 showIcon
                 style={{ marginTop: "10px" }}
               />
