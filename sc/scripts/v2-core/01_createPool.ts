@@ -38,7 +38,7 @@ async function main() {
     //agrs
 
     const txData = contract.methods
-        .createPool(tokens.USDC, tokens.USDT)
+        .createPool(tokens.DAI, tokens.USDT)
         .encodeABI();
     console.log(txData);
 

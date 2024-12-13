@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-
-import '../interfaces/IPoolV2.sol';
-import '../interfaces/IPoolFactory.sol';
-import '../libraries/SafeMath.sol';
-import '../libraries/Math.sol';
-
-
+import "../interfaces/IPoolV2.sol";
+import "../interfaces/IPoolFactory.sol";
+import "../libraries/SafeMath.sol";
+import "../libraries/Math.sol";
+import "hardhat/console.sol";
 
 contract PoolV2 is IPoolV2 {
-   
     using SafeMath for uint;
     address public immutable factory;
 
@@ -53,18 +50,14 @@ contract PoolV2 is IPoolV2 {
         reserve0 = res0;
         reserve1 = res1;
         emit Sync(reserve0, reserve1);
-
     }
 
-    //swap exact token 
+    //swap exact token
     function swap(
         address _tokenIn,
         uint _amountIn
     ) external returns (uint amountOut) {
-        require(
-            _tokenIn == token0 || _tokenIn == token1,
-            "Invalid token"
-        );
+        require(_tokenIn == token0 || _tokenIn == token1, "Invalid token");
         bool isToken0 = _tokenIn == token0;
         (address tokenIn, address tokenOut, uint resIn, uint resOut) = isToken0
             ? (token0, token1, reserve0, reserve1)
@@ -83,32 +76,29 @@ contract PoolV2 is IPoolV2 {
             IERC20(token1).balanceOf(address(this))
         );
 
-        if (isToken0){
+        if (isToken0) {
             emit Swap(msg.sender, amountInWithFee, 0, 0, amountOut);
-        }
-        else {
+        } else {
             emit Swap(msg.sender, 0, amountInWithFee, amountOut, 0);
         }
-           
     }
-    
+
     //swap for exact token
     function swapFor(
         address _tokenOut,
         uint _amountOut
     ) external override returns (uint amountIn) {
-        require(_tokenOut == token0 || _tokenOut == token1, 
-        'Invalid token' );
+        require(_tokenOut == token0 || _tokenOut == token1, "Invalid token");
         bool isToken0 = _tokenOut == token0;
         (address tokenIn, address tokenOut, uint resIn, uint resOut) = isToken0
             ? (token1, token0, reserve1, reserve0)
             : (token0, token1, reserve0, reserve1);
-        
-        //dx = xdy/(y - dy) 
-        amountIn = (resIn.mul(_amountOut) ) / (resOut.sub(_amountOut));
-        
+
+        //dx = xdy/(y - dy)
+        amountIn = (resIn.mul(_amountOut)) / (resOut.sub(_amountOut));
+
         //include trading fee
-        amountIn = amountIn.mul(1003) / 1000; 
+        amountIn = amountIn.mul(1003) / 1000;
 
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn);
         IERC20(tokenOut).transfer(msg.sender, _amountOut);
@@ -118,13 +108,11 @@ contract PoolV2 is IPoolV2 {
             IERC20(token1).balanceOf(address(this))
         );
 
-        if (isToken0){
+        if (isToken0) {
             emit Swap(msg.sender, 0, amountIn, _amountOut, 0);
-        }
-        else {
+        } else {
             emit Swap(msg.sender, amountIn, 0, 0, _amountOut);
         }
-
     }
 
     function addLiquidity(
@@ -136,14 +124,17 @@ contract PoolV2 is IPoolV2 {
         IERC20(token1).transferFrom(msg.sender, address(this), _amount1);
 
         if (reserve0 > 0 || reserve1 > 0) {
-            require(reserve0.mul(_amount1) == reserve1.mul(_amount0), "x/y != dx/dy");
+            require(
+                reserve0  / reserve1 ==  _amount0 / _amount1,
+                "x/y != dx/dy"
+            );
         }
 
         //s = (dx * T)/X = (dy * T)/ Y
         if (totalSupply == 0) {
             shares = Math.sqrt(_amount0.mul(_amount1));
         } else {
-            shares =  Math.min(
+            shares = Math.min(
                 (_amount0.mul(totalSupply)) / reserve0,
                 (_amount1.mul(totalSupply)) / reserve1
             );
@@ -176,10 +167,8 @@ contract PoolV2 is IPoolV2 {
         IERC20(token1).transfer(msg.sender, amount1);
 
         emit RemoveLiquidity(msg.sender, amount0, amount1, _shares);
-        
     }
 
-    
     // view
     function getAmountOut(
         address _tokenIn,
@@ -195,7 +184,9 @@ contract PoolV2 is IPoolV2 {
             : (reserve1, reserve0);
 
         uint amountInWithFee = (_amountIn.mul(997)) / 1000;
-        amountOut = (resOut.mul(amountInWithFee)) / (resIn.add(amountInWithFee));
+        amountOut =
+            (resOut.mul(amountInWithFee)) /
+            (resIn.add(amountInWithFee));
     }
 
     function getAmountIn(
@@ -216,10 +207,7 @@ contract PoolV2 is IPoolV2 {
             ? IERC20(token0).balanceOf(address(this))
             : IERC20(token1).balanceOf(address(this));
 
-        amountIn = (reserveIn.mul(amountOut))/ (reserveOut.sub(amountOut));
+        amountIn = (reserveIn.mul(amountOut)) / (reserveOut.sub(amountOut));
         amountIn = amountIn.mul(1003) / 1000;
-    }
-
-
-   
+    }  
 }
