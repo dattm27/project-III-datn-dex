@@ -116,7 +116,7 @@ export function handleSync(event: SyncEvent): void {
   )
   entity.reserve0 = event.params.reserve0
   entity.reserve1 = event.params.reserve1
-
+  entity.pool = event.address.toHex()
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
