@@ -107,3 +107,19 @@ export async function getTransactionHistory(
   const res = await request<{transactions: TransactionHistory []}>(endpoint, query);
   return res.transactions;
 }
+
+export async function getPoolPriceHistory(blockTimestamp: string):Promise<PoolReserve[]>{
+  const query = gql`{
+    syncs(
+      where: {blockTimestamp_gte: "${blockTimestamp}"}  
+      orderDirection: desc
+      orderBy: blockTimestamp
+    ) {
+      blockTimestamp
+      reserve0
+      reserve1
+    }
+  }`
+  const res = await request<{reserves: PoolReserve[]}>(endpoint, query);
+  return res.reserves;
+};
