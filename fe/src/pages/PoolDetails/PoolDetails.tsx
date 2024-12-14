@@ -9,6 +9,7 @@ import { getPoolDetails } from 'src/services';
 const { Text, Title } = Typography;
 import { getTransactionHistory } from 'src/services';
 import TransactionHistoryTable from './TransactionHistoryTable';
+import { PoolChart } from './PoolChart';
 export const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
   const navigate = useNavigate();
@@ -93,16 +94,18 @@ export const PoolDetails: React.FC = () => {
         <Row gutter={16}>
           {/* Cột 1 - Skeleton cho Chart và Bảng Lịch sử Giao dịch */}
           <Col span={16}>
-            <Card title="Chart" bordered={false}>
+            <Card title="Price History" bordered={false}>
               <Skeleton active loading={loading} paragraph={{ rows: 8 }} />
               <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <DotChartOutlined
+                {/* <DotChartOutlined
                   style={{
                     fontSize: 300,  // Bạn có thể điều chỉnh kích thước biểu đồ tùy ý
                     color: '#bfbfbf',
                   }}
-                />
+                /> */}
+                 
               </div>
+              <PoolChart poolId={poolId!} blockTimestamp={0}/>
             </Card>
   
             <Card title="Transaction History" bordered={false} style={{ marginTop: '20px' }}>
@@ -165,6 +168,7 @@ export const PoolDetails: React.FC = () => {
             </Card>
           </Col>
         </Row>
+      
       </div>
     );
   }

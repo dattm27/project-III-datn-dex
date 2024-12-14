@@ -38,8 +38,6 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
       try {
         const pool = await getPoolDetails(poolId);
         setPool(pool);
-        console.log(pool.token0, pool.token1);
-        console.log(pool.token0.id);
         setTokenIn(pool.token0);
         setTokenOut(pool.token1);
       }

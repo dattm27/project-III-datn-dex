@@ -19,8 +19,3 @@ declare interface BalanceProps {
 }
 
 
-declare interface PoolReserve {
-  blockTimestamp: number;
-  reserve0: number;
-  reserve1: number;
-}
