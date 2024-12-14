@@ -10,6 +10,8 @@ import { Address } from "viem";
 import { useCheckAllowance, useCheckBalance } from "src/web3/ERC20Token/readContract";
 import { ApproveERC20Button } from "./ApproveERC20TokenButton";
 import { EXPLORER_BASE_URL } from "src/constants";
+import { useNavigate } from "react-router-dom";
+
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -28,7 +30,7 @@ export const AddLiquidity: React.FC = () => {
   const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
   const [sufficientAllowance0, setSufficientAllowance0] = useState<boolean>(true);
   const [sufficientAllowance1, setSufficientAllowance1] = useState<boolean>(true);
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     // Fetch các dữ liệu khác
     async function fetchData() {
@@ -150,6 +152,13 @@ export const AddLiquidity: React.FC = () => {
 
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+      <Button
+        type="text"
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: "20px" }}
+      >
+        ← Back
+      </Button>
       <Typography.Title level={2}>Add Liquidity</Typography.Title>
       <Form
         layout="vertical"
