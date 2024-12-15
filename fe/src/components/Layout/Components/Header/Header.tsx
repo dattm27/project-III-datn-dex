@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
         <nav className="header">
             {/* Logo */}
             <div className="header__logo" >
-                <img src="src/assets/images/icon.svg" alt="Logo" className="header__logo-icon" />
+                <img src="src/assets/icon.png" alt="Logo" className="header__logo-icon" />
                 <h1>{APP_NAME}</h1>
             </div>
 
