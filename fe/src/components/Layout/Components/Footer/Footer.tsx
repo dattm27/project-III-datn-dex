@@ -1,4 +1,4 @@
-export const Footer = () => (
+const Footer = () => (
     <footer style={{ 
       textAlign: 'center', 
       padding: '0.2rem',
@@ -7,3 +7,5 @@ export const Footer = () => (
       <p>© 2023 Your Company. All rights reserved.</p>
     </footer>
   );
+
+export default Footer;

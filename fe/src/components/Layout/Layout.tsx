@@ -1,4 +1,4 @@
-import {Header, Footer} from "./components"
+import  {Header, Footer} from "./Components"
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div  style={{ 
       display: 'flex', 
