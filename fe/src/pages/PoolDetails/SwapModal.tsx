@@ -246,7 +246,6 @@ const TokenSwap: React.FC = () => {
                     tokenAddress={tokenIn!}
                     spenderAddress={pool!.id}
                     amount={(amountIn).toString()}
-                    token={tokenIn!}
                 />)
                     :
                 (<Button
@@ -305,9 +304,6 @@ const TokenSwap: React.FC = () => {
                 style={{ marginTop: "10px" }}
               />
             )}
-
-
-            {/* Footer */}
             <Text style={{ display: 'block', textAlign: 'center', marginTop: '20px', fontSize: '14px', color: '#666' }}>
                 The largest onchain marketplace. Buy and sell crypto on Ethereum and 11+ other chains.
             </Text>

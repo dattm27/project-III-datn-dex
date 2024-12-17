@@ -238,7 +238,6 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
                     tokenAddress={tokenIn.id}
                     spenderAddress={poolId}
                     amount={(amountIn).toString()}
-                    token={tokenIn}
                   />
                   )
                   : <Button

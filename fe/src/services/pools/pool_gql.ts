@@ -23,6 +23,18 @@ export function getTokensQuery():  string {
   return query ;
 }
 
+export function getTokenDetailQuery(id: string): string {
+  const query = gql`
+  {
+    token(id: "${id}") {
+    decimals
+    id
+    name
+    symbol
+  }
+  }`;
+  return query;
+}
 // Trả về query và hàm để parse kết quả cho các pools
 export function getPoolsQuery():   string  {
   const query = gql`
