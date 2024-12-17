@@ -77,11 +77,11 @@ type Sync @entity(immutable: true) {
 type LiquidityPosition @entity {
   id: ID!  
   provider: Bytes!  
-  pools: [Pool!]  
-  token0Amount: BigDecimal!  
-  token1Amount: BigDecimal!  
-  liquidityAmount: BigDecimal!  
-  timestamp: BigInt!  
+  pool: Pool!
+  token0Amount: BigInt!  
+  token1Amount: BigInt!  
+  timestamp: BigInt! 
+  shares: BigInt! 
 }
 
 enum TransactionType {
