@@ -9,7 +9,7 @@ export type PageAble = {
 export const endpoint = API_URL_SUB_GRAPH;
 
 // Trả về query và hàm để parse kết quả cho các tokens
-export function getTokensQuery(): { query: string } {
+export function getTokensQuery():  string {
   const query = gql`
     {
       tokens {
@@ -20,7 +20,7 @@ export function getTokensQuery(): { query: string } {
       }
     }
   `;
-  return { query };
+  return query ;
 }
 
 // Trả về query và hàm để parse kết quả cho các pools

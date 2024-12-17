@@ -132,6 +132,7 @@ export const SwapButton: React.FC<SwapButtonProps> = ({ poolId, token0, token1 }
     if (isConfirmed) {
       setAmountIn('');
       setAmountOut('');
+
     }
   }, [isConfirmed]);
 
