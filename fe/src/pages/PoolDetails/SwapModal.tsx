@@ -23,7 +23,7 @@ const TokenSwap: React.FC = () => {
     const { loading: tokensLoading, data: tokensData } = useFetchGql<{ tokens: Token[] }>(getTokensQuery());
     const { loading: poolsLoading, data: poolsData } = useFetchGql<{ pools: Pool[] }>(getPoolsQuery());
     const { isConnected, address } = useAccount();
-    const { data: allowanceTokenIn } = useCheckAllowance({ tokenAddress: tokenIn!, ownerAddress: address!, spenderAddress: pool?.id, autoRefetch: true })
+    const { data: allowanceTokenIn } = useCheckAllowance({ tokenAddress: tokenIn!, ownerAddress: address!, spenderAddress: pool?.id || "", autoRefetch: true })
     const { data: balanceTokenIn } = useCheckBalance({ tokenAddress: tokenIn!, accountAddress: address! });
     const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
     const [sufficientAllowance, setSufficientAllowance] = useState<boolean>(true);
