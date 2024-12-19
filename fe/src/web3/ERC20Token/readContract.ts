@@ -25,6 +25,7 @@ export const useCheckAllowance = ({
         }
     }, [autoRefetch, blockNumber, refetch]); 
 
+    console.log('account', ownerAddress, 'token', tokenAddress, 'spender:', spenderAddress, 'amount',data);
     return { data, isLoading, error };
 };
 

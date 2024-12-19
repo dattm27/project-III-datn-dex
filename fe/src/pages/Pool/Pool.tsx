@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Typography, Card, Space , Empty} from "antd";
+import YourPools from './YourPools';
 
 const { Title } = Typography;
 
@@ -23,15 +24,7 @@ export const Pool: React.FC = () => {
 
       {/* Empty State */}
       <Card style={{ textAlign: "center" }}>
-      <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <span>
-                No pools found. <br />
-                Create a pair or add liquidity to see your pools here.
-              </span>
-            }
-          />
+        <YourPools/>
       </Card>
 
       {/* Explore Pools */}

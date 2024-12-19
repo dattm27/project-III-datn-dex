@@ -85,6 +85,29 @@ export function getPoolDetailsQuery(id: string): string  {
   return query ;
 }
 
+export function getLiquidityPositionsQuery(user: string,
+  { offset, limit }: PageAble = { offset: 0, limit: 20 }
+): string {
+  const query = gql`{
+     liquidityPositions(first: ${limit}, skip: ${offset}, where: {provider: "${user}"}) {
+      shares
+      token0Amount
+      token1Amount
+      pool {
+        id
+        token0 {
+          symbol
+        }
+        token1 {
+          symbol
+        }
+      }
+    }
+  }
+  `
+  return query;
+}
+
 // Trả về query và hàm để parse lịch sử giao dịch của pool
 export function getTransactionHistoryQuery(
   pool: string,

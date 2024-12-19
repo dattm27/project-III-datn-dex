@@ -245,7 +245,6 @@ export const AddLiquidity: React.FC = () => {
                   tokenAddress={token0!.id}
                   spenderAddress={selectedPool!.id}
                   amount={(parseFloat(token0Amount)).toString()}
-                  token={token0!}
                 />
               )
               : !sufficientAllowance1 ?
@@ -254,7 +253,6 @@ export const AddLiquidity: React.FC = () => {
                     tokenAddress={token1!.id}
                     spenderAddress={selectedPool!.id}
                     amount={(parseFloat(token1Amount)).toString()}
-                    token={token1!}
                   />
                 )
                 : (

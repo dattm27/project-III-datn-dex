@@ -9,8 +9,11 @@ export const useFetchGql = <T>(query: string) => {
   const [loading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
+ 
   useEffect(() => {
+    if (!query) return;
     const fetchData = async () => {
+      
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const response = await request<T>(endpoint, query);
@@ -31,5 +34,6 @@ export const useFetchGql = <T>(query: string) => {
     fetchData();
 
   }, [query])
+
   return { data, loading, error };
 }
