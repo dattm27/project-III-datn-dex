@@ -35,9 +35,10 @@ declare interface TransactionHistory {
 
 
 declare interface PoolReserve {
-  blockTimestamp: number;
+  blockTimestamp?: number;
   reserve0: number;
   reserve1: number;
+  time?: string;
 }
 
 declare interface liquidityPosition { 

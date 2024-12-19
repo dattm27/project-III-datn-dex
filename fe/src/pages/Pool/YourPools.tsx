@@ -2,7 +2,6 @@ import { useAccount } from "wagmi";
 import { Card, Empty, Space, Typography, Button, Row, Col, Spin } from "antd";
 import { useFetchGql } from "src/hooks/useFetch";
 import { getLiquidityPositionsQuery } from "src/services/pools/pool_gql";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
@@ -36,7 +35,7 @@ const YourPools: React.FC = () => {
     if (error) {
         return (
             <Card style={{ textAlign: "center" }}>
-                <p>Error fetching pools: {error.message}</p>
+                <p>Error fetching pools: {error}</p>
             </Card>
         );
     }

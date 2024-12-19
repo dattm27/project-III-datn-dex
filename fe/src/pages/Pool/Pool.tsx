@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography, Card, Space , Empty} from "antd";
+import { Button, Typography, Card, Space } from "antd";
 import YourPools from './YourPools';
 
 const { Title } = Typography;

@@ -10,7 +10,6 @@ import { Address } from "viem";
 import { useCheckAllowance, useCheckBalance } from "src/web3/ERC20Token/readContract";
 import { ApproveERC20Button } from "./ApproveERC20TokenButton";
 import { EXPLORER_BASE_URL } from "src/constants";
-import { useNavigate } from "react-router-dom";
 import BackButton from "src/components/common/BackButton";
 
 const { Option } = Select;
@@ -31,7 +30,6 @@ export const AddLiquidity: React.FC = () => {
   const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
   const [sufficientAllowance0, setSufficientAllowance0] = useState<boolean>(true);
   const [sufficientAllowance1, setSufficientAllowance1] = useState<boolean>(true);
-  const navigate = useNavigate();
   useEffect(() => {
     // Fetch các dữ liệu khác
     async function fetchData() {

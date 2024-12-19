@@ -1,7 +1,5 @@
 import React from 'react';
 import SwapModal from '../PoolDetails/SwapModal';
-import { Typography } from 'antd';
-const { Title, Text } = Typography;
 
 export const Home: React.FC = () => {
   return (

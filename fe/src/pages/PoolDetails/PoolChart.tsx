@@ -8,7 +8,8 @@ interface PoolChartProps {
 }
 
 export const PoolChart: React.FC<PoolChartProps> = ({ poolId, blockTimestamp }) => {
-  const [priceHistory, setPriceHistory] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [priceHistory, setPriceHistory] = useState<any []>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,6 +19,7 @@ export const PoolChart: React.FC<PoolChartProps> = ({ poolId, blockTimestamp }) 
         setLoading(true);
         const data = await getPoolPriceHistory(poolId.toString(), blockTimestamp.toString());
         const formattedData = data
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .map((entry: any) => {
             const reserve0 = Number(entry.reserve0);
             const reserve1 = Number(entry.reserve1);
