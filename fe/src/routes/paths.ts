@@ -3,5 +3,6 @@ export const PATHS = {
     EXPLORE : "/explore",
     EXPLORE_POOL: "/explore/pools/:poolId", 
     POOL: "/pool",
-    ADD_LIQUIDITY: "/add-liquidity/:poolId"
+    ADD_LIQUIDITY: "/add-liquidity/:poolId",
+    REMOVE_LIQUIDITY: "remove-liquidity/:poolId/:user"
 };

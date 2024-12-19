@@ -60,3 +60,7 @@
 }
 
 /* https://reactjsexample.com/animated-css-gradient-background-generator-using-react/ */
+
+.page  {
+  height: 95vh;
+}

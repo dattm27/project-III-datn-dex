@@ -11,6 +11,7 @@ import { useCheckAllowance, useCheckBalance } from "src/web3/ERC20Token/readCont
 import { ApproveERC20Button } from "./ApproveERC20TokenButton";
 import { EXPLORER_BASE_URL } from "src/constants";
 import { useNavigate } from "react-router-dom";
+import BackButton from "src/components/common/BackButton";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -30,7 +31,7 @@ export const AddLiquidity: React.FC = () => {
   const [sufficientBalance, setSufficientBalance] = useState<boolean>(true);
   const [sufficientAllowance0, setSufficientAllowance0] = useState<boolean>(true);
   const [sufficientAllowance1, setSufficientAllowance1] = useState<boolean>(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   useEffect(() => {
     // Fetch các dữ liệu khác
     async function fetchData() {
@@ -50,11 +51,11 @@ export const AddLiquidity: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(token0);
-    console.log(token1?.id);
-    console.log('selected pool', selectedPool);
-  }, [selectedPool])
+  // useEffect(() => {
+  //   console.log(token0);
+  //   console.log(token1?.id);
+  //   console.log('selected pool', selectedPool);
+  // }, [selectedPool])
 
 
   useEffect(() => {
@@ -151,168 +152,170 @@ export const AddLiquidity: React.FC = () => {
 
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      <Button
-        type="text"
-        onClick={() => navigate(-1)}
-        style={{ marginBottom: "20px" }}
-      >
-        ← Back
-      </Button>
-      <Typography.Title level={2}>Add Liquidity</Typography.Title>
-      <Form
-        layout="vertical"
-        onFinish={handleAddLiquidity}
-      >
-        <Form.Item label="Select Pair" required>
-          <Input.Group compact>
-            <Select
-              value={token0?.symbol}
-              onChange={(value) =>
-                setToken0(tokens.find((t) => t.symbol === value) || null)
-              }
-              style={{ width: "48%", marginRight: "4%" }}
-            >
-              {tokens.map((token) => (
-                <Option key={token.symbol} value={token.symbol}>
-                  {token.symbol} - {token.name}
-                </Option>
-              ))}
-            </Select>
-            <Select
-              value={token1?.symbol}
-              onChange={(value) =>
-                setToken1(tokens.find((t) => t.symbol === value) || null)
-              }
-              style={{ width: "48%" }}
-            >
-              {tokens.map((token) => (
-                <Option key={token.symbol} value={token.symbol}>
-                  {token.symbol} - {token.name}
-                </Option>
-              ))}
-            </Select>
-          </Input.Group>
-        </Form.Item>
+    <div style={{
+      height: '90vh', 
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }} >
+      <div style={{ padding: '20px', width: '40vw', maxWidth: '600px', backgroundColor: '#ffffff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} >
+        <BackButton/>
+        <Typography.Title level={2}>Add Liquidity</Typography.Title>
+        <Form
+          layout="vertical"
+          onFinish={handleAddLiquidity}
+        >
+          <Form.Item label="Select Pair" required>
+            <Input.Group compact>
+              <Select
+                value={token0?.symbol}
+                onChange={(value) =>
+                  setToken0(tokens.find((t) => t.symbol === value) || null)
+                }
+                style={{ width: "48%", marginRight: "4%" }}
+              >
+                {tokens.map((token) => (
+                  <Option key={token.symbol} value={token.symbol}>
+                    {token.symbol} - {token.name}
+                  </Option>
+                ))}
+              </Select>
+              <Select
+                value={token1?.symbol}
+                onChange={(value) =>
+                  setToken1(tokens.find((t) => t.symbol === value) || null)
+                }
+                style={{ width: "48%" }}
+              >
+                {tokens.map((token) => (
+                  <Option key={token.symbol} value={token.symbol}>
+                    {token.symbol} - {token.name}
+                  </Option>
+                ))}
+              </Select>
+            </Input.Group>
+          </Form.Item>
 
-        <Form.Item label="Deposit Amount" required>
-          <Input.Group compact>
-            <Input
-              type="number"
-              placeholder={`Amount for ${token0?.symbol || ""}`}
-              value={token0Amount}
-              required
-              onChange={(e) => {
-                setToken0Amount(e.target.value);
+          <Form.Item label="Deposit Amount" required>
+            <Input.Group compact>
+              <Input
+                type="number"
+                placeholder={`Amount for ${token0?.symbol || ""}`}
+                value={token0Amount}
+                required
+                onChange={(e) => {
+                  setToken0Amount(e.target.value);
 
-                // avoid divide by 0 
-                if (parseFloat(selectedPool!.reserve1)) setToken1Amount(calculateAmount1(e.target.value));
-              }}
-              style={{ width: "48%", marginRight: "4%" }}
-            />
-            <Input
-              type="number"
-              placeholder={`Amount for ${token1?.symbol || ""}`}
-              value={token1Amount}
-              required
-              onChange={(e) => {
-                setToken1Amount(e.target.value);
-                // avoid divide by 0 
-                if (parseFloat(selectedPool!.reserve0)) setToken0Amount(calculateAmount0(e.target.value));
-              }}
-              style={{ width: "48%" }}
-            />
-          </Input.Group>
-        </Form.Item>
+                  // avoid divide by 0 
+                  if (parseFloat(selectedPool!.reserve1)) setToken1Amount(calculateAmount1(e.target.value));
+                }}
+                style={{ width: "48%", marginRight: "4%" }}
+              />
+              <Input
+                type="number"
+                placeholder={`Amount for ${token1?.symbol || ""}`}
+                value={token1Amount}
+                required
+                onChange={(e) => {
+                  setToken1Amount(e.target.value);
+                  // avoid divide by 0 
+                  if (parseFloat(selectedPool!.reserve0)) setToken0Amount(calculateAmount0(e.target.value));
+                }}
+                style={{ width: "48%" }}
+              />
+            </Input.Group>
+          </Form.Item>
 
-        <Form.Item>
-          {!isConnected ? (
-            <ConnectWallet block={true} />
-          ) : !sufficientBalance ? (
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              block
-              danger
-            >
-              Insufficient Balance
-            </Button>
-          )
-            : !sufficientAllowance0 ?
-              (
-                <ApproveERC20Button
-                  tokenAddress={token0!.id}
-                  spenderAddress={selectedPool!.id}
-                  amount={(parseFloat(token0Amount)).toString()}
-                />
-              )
-              : !sufficientAllowance1 ?
+          <Form.Item>
+            {!isConnected ? (
+              <ConnectWallet block={true} />
+            ) : !sufficientBalance ? (
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                block
+                danger
+              >
+                Insufficient Balance
+              </Button>
+            )
+              : !sufficientAllowance0 ?
                 (
                   <ApproveERC20Button
-                    tokenAddress={token1!.id}
+                    tokenAddress={token0!.id}
                     spenderAddress={selectedPool!.id}
-                    amount={(parseFloat(token1Amount)).toString()}
+                    amount={(parseFloat(token0Amount)).toString()}
                   />
                 )
-                : (
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    size="large"
-                    block
-                    loading={isPending}
-                    disabled={isPending}
-                  >
-                    {isPending ? "Confirming" : "Add Liquidity"}
-                  </Button>
-                )
-          }
-        </Form.Item>
-
-        {hash && (
-          <Alert
-            type="info"
-            message={
-              <>
-                Transaction Hash: <Text copyable>{hash}</Text>
-              </>
+                : !sufficientAllowance1 ?
+                  (
+                    <ApproveERC20Button
+                      tokenAddress={token1!.id}
+                      spenderAddress={selectedPool!.id}
+                      amount={(parseFloat(token1Amount)).toString()}
+                    />
+                  )
+                  : (
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      size="large"
+                      block
+                      loading={isPending}
+                      disabled={isPending}
+                    >
+                      {isPending ? "Confirming" : "Add Liquidity"}
+                    </Button>
+                  )
             }
-            showIcon
-          />
-        )}
+          </Form.Item>
 
-        {isConfirming && (
-          <Alert
-            type="warning"
-            message="Waiting for confirmation..."
-            showIcon
-            style={{ marginTop: "10px" }}
-          />
-        )}
+          {hash && (
+            <Alert
+              type="info"
+              message={
+                <>
+                  Transaction Hash: <Text copyable>{hash}</Text>
+                </>
+              }
+              showIcon
+            />
+          )}
 
-        {isConfirmed && (
-          <Alert
-            type="success"
-            message={
-              <>
-                Transaction confirmed.
-                <a
-                  href={`${EXPLORER_BASE_URL}/${hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View on Block Explorer
-                </a>
+          {isConfirming && (
+            <Alert
+              type="warning"
+              message="Waiting for confirmation..."
+              showIcon
+              style={{ marginTop: "10px" }}
+            />
+          )}
 
-              </>}
-            showIcon
-            style={{ marginTop: "10px" }}
-          />
-        )}
+          {isConfirmed && (
+            <Alert
+              type="success"
+              message={
+                <>
+                  Transaction confirmed.
+                  <a
+                    href={`${EXPLORER_BASE_URL}/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View on Block Explorer
+                  </a>
 
-      </Form>
-      Balance 0: {balance0?.toString()}
+                </>}
+              showIcon
+              style={{ marginTop: "10px" }}
+            />
+          )}
+
+        </Form>
+        Balance 0: {balance0?.toString()}
+      </div>
     </div>
+
   );
 };

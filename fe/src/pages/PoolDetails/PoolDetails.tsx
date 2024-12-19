@@ -44,7 +44,7 @@ export const PoolDetails: React.FC = () => {
   const pool = poolData?.pool;
 
   return (
-    <div >
+    <div style= {{marginBottom: '20px'}} >
       {poolId && PoolDetailBreadcrumb(poolId)}
 
       <Title level={1}>

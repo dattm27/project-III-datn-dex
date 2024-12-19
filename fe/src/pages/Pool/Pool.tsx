@@ -6,7 +6,7 @@ const { Title } = Typography;
 
 export const Pool: React.FC = () => {
   return (
-    <div style={{ padding: "24px" }}>
+    <div style={{ padding: "24px" }} className='page'>
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
       {/* Header */}
       <Space

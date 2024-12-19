@@ -3,9 +3,12 @@ import { Card, Empty, Space, Typography, Button, Row, Col, Spin } from "antd";
 import { useFetchGql } from "src/hooks/useFetch";
 import { getLiquidityPositionsQuery } from "src/services/pools/pool_gql";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 const { Text } = Typography;
 
 const YourPools: React.FC = () => {
+    const navigate = useNavigate(); 
     const { address, isConnected } = useAccount();
     const { data, loading, error } = useFetchGql<{ liquidityPositions: liquidityPosition[] }>(
       address ?  getLiquidityPositionsQuery(address! as string, { offset: 0, limit: 10 }) : ""
@@ -64,7 +67,7 @@ const YourPools: React.FC = () => {
             
         {positons.map((position, index) => (
         
-            <Row justify="space-between" gutter={[16, 16]}>
+            <Row  key={position.pool.id} justify="space-between" gutter={[16, 16]}>
              <Col span={4}>
               <Text strong>{index + 1}</Text>
             </Col>
@@ -81,10 +84,13 @@ const YourPools: React.FC = () => {
            
                 danger
                 style={{ width: "100%" }}
-                onClick={() => {
-                  // Handle remove liquidity logic here
-                  console.log("Remove liquidity for pool:", position.pool.id);
-                }}
+                onClick={() => navigate(`/remove-liquidity/${position.pool.id}/${address}`, {
+                  state: {
+                    token0: position.pool.token0,
+                    token1: position.pool.token1,
+                    pool: position.pool
+                  },
+                })}
               >
                 Remove Liquidity
               </Button>

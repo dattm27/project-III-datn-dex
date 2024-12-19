@@ -9,9 +9,8 @@ export const Home: React.FC = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      height: '70vh ',  
       width: '100%',    
-    }}>
+    }} className='page'>
       {/* <h1>Swap anytime, anywhere.</h1> */}
       <SwapModal/>
     </div>

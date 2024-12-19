@@ -9,7 +9,7 @@ export type PageAble = {
 export const endpoint = API_URL_SUB_GRAPH;
 
 // Trả về query và hàm để parse kết quả cho các tokens
-export function getTokensQuery():  string {
+export function getTokensQuery(): string {
   const query = gql`
     {
       tokens {
@@ -20,7 +20,7 @@ export function getTokensQuery():  string {
       }
     }
   `;
-  return query ;
+  return query;
 }
 
 export function getTokenDetailQuery(id: string): string {
@@ -36,7 +36,7 @@ export function getTokenDetailQuery(id: string): string {
   return query;
 }
 // Trả về query và hàm để parse kết quả cho các pools
-export function getPoolsQuery():   string  {
+export function getPoolsQuery(): string {
   const query = gql`
     {
       pools {
@@ -56,11 +56,11 @@ export function getPoolsQuery():   string  {
       }
     }
   `;
-  return  query ;
+  return query;
 }
 
 // Trả về query và hàm để parse kết quả cho chi tiết pool
-export function getPoolDetailsQuery(id: string): string  {
+export function getPoolDetailsQuery(id: string): string {
   const query = gql`
     {
       pool(id: "${id}") {
@@ -82,7 +82,7 @@ export function getPoolDetailsQuery(id: string): string  {
       }
     }
   `;
-  return query ;
+  return query;
 }
 
 export function getLiquidityPositionsQuery(user: string,
@@ -168,4 +168,29 @@ export function getPoolPriceHistoryQuery(
     }
   `;
   return { query };
+}
+
+export function getPoolPosition(
+  poolId: string,
+  user: string
+): string {
+  const id = user.toLowerCase().concat("-").concat(poolId.toLowerCase());
+  const query = gql`{
+    liquidityPosition(id: "${id}") {
+    token0Amount
+    token1Amount
+    shares
+    pool {
+      token0 {
+        symbol
+      }
+      token1 {
+        symbol
+      }
+    }
+  }
+  }
+
+  `;
+  return query;
 }
