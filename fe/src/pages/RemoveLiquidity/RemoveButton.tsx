@@ -36,8 +36,7 @@ const RemoveButtonn: React.FC<RemoveButtonnProps> = ({ poolId, shares }) => {
                 disabled={parseInt(shares) == 0}
                 loading={isPending}
             >
-                {isPending ? 'Confirming' : 'Remove Liquidity'}  y</Button>
-            );
+                {isPending ? 'Confirming' : 'Remove Liquidity'}</Button>
             {hash && (
                 <Alert
                     type="info"
