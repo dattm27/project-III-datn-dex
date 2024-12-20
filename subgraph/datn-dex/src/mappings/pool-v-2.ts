@@ -4,7 +4,7 @@ import {
   Swap as SwapEvent,
   Sync as SyncEvent,
 } from "../../generated/templates/PoolV2/PoolV2"
-import { AddLiquidity, Pool, RemoveLiquidity, Swap, Sync, Transaction } from "../../generated/schema"
+import { AddLiquidity, Pool, RemoveLiquidity, Swap, Sync, Transaction, LiquidityPosition } from "../../generated/schema"
 import { BigInt, Bytes } from "@graphprotocol/graph-ts"
 
 export function handleAddLiquidity(event: AddLiquidityEvent): void {
@@ -37,8 +37,25 @@ export function handleAddLiquidity(event: AddLiquidityEvent): void {
     pool.reserve0 = pool.reserve0.plus(event.params.amount0);
     pool.reserve1 = pool.reserve1.plus(event.params.amount1);
     pool.save();
-    //update liquidity provider shares
   }
+  let positionId = event.params.sender.toHex().concat("-").concat(event.address.toHex());
+  let position = LiquidityPosition.load(positionId);
+  if (!position) {
+    position = new LiquidityPosition(positionId);
+    position.provider = event.params.sender;
+    position.pool = event.address.toHex(); // Gắn kết với pool
+    position.token0Amount = BigInt.fromI32(0);
+    position.token1Amount = BigInt.fromI32(0);
+    position.shares = BigInt.fromI32(0);
+    position.timestamp = event.block.timestamp;
+  }
+
+  // Cập nhật LiquidityPosition
+  position.token0Amount = position.token0Amount.plus(event.params.amount0);
+  position.token1Amount = position.token1Amount.plus(event.params.amount1);
+  position.shares = position.shares.plus(event.params.shares);
+  position.timestamp = event.block.timestamp;
+  position.save();
 }
 
 
@@ -73,6 +90,25 @@ export function handleRemoveLiquidity(event: RemoveLiquidityEvent): void {
     pool.reserve1 = pool.reserve1.minus(event.params.amount1);
     pool.save();
   }
+
+  let positionId = event.params.sennder.toHex().concat("-").concat(event.address.toHex());
+  let position = LiquidityPosition.load(positionId);
+  if (!position) {
+    position = new LiquidityPosition(positionId);
+    position.provider = event.params.sennder;
+    position.pool = event.address.toHex(); // Gắn kết với pool
+    position.token0Amount = BigInt.fromI32(0);
+    position.token1Amount = BigInt.fromI32(0);
+    position.shares = BigInt.fromI32(0);
+    position.timestamp = event.block.timestamp;
+  }
+
+  // Cập nhật LiquidityPosition
+  position.token0Amount = position.token0Amount.minus(event.params.amount0);
+  position.token1Amount = position.token1Amount.minus(event.params.amount1);
+  position.shares = position.shares.minus(event.params.shares);
+  position.timestamp = event.block.timestamp;
+  position.save();
 }
 
 export function handleSwap(event: SwapEvent): void {
@@ -116,7 +152,7 @@ export function handleSync(event: SyncEvent): void {
   )
   entity.reserve0 = event.params.reserve0
   entity.reserve1 = event.params.reserve1
-
+  entity.pool = event.address.toHex()
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash

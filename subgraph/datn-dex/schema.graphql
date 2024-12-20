@@ -28,6 +28,7 @@ type Pool @entity(immutable: false) {
   
   liquidityPositions: [LiquidityPosition!]
   transactions: [Transaction!] @derivedFrom(field: "pool")
+  priceHistory: [Sync!] @derivedFrom(field: "pool")
 }
 
 type AddLiquidity @entity(immutable: true) {
@@ -64,6 +65,7 @@ type Swap @entity(immutable: true) {
 
 type Sync @entity(immutable: true) {
   id: Bytes!
+  pool: Pool!
   reserve0: BigInt! # uint256
   reserve1: BigInt! # uint256
   blockNumber: BigInt!
@@ -75,11 +77,11 @@ type Sync @entity(immutable: true) {
 type LiquidityPosition @entity {
   id: ID!  
   provider: Bytes!  
-  pools: [Pool!]  
-  token0Amount: BigDecimal!  
-  token1Amount: BigDecimal!  
-  liquidityAmount: BigDecimal!  
-  timestamp: BigInt!  
+  pool: Pool!
+  token0Amount: BigInt!  
+  token1Amount: BigInt!  
+  timestamp: BigInt! 
+  shares: BigInt! 
 }
 
 enum TransactionType {
