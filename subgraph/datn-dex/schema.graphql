@@ -29,6 +29,7 @@ type Pool @entity(immutable: false) {
   liquidityPositions: [LiquidityPosition!]
   transactions: [Transaction!] @derivedFrom(field: "pool")
   priceHistory: [Sync!] @derivedFrom(field: "pool")
+  totalSupply: BigInt!
 }
 
 type AddLiquidity @entity(immutable: true) {

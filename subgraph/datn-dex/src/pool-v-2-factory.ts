@@ -44,6 +44,7 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.totalSupply = new BigInt(0);
 
   entity.save()
 

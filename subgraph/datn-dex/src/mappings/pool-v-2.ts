@@ -31,11 +31,12 @@ export function handleAddLiquidity(event: AddLiquidityEvent): void {
   transaction.save()
   addLiquidity.save()
 
-  let pool = Pool.load(event.address.toString())
+  let pool = Pool.load(event.address.toHex())
   if (pool) {
     //update pool reserves
     pool.reserve0 = pool.reserve0.plus(event.params.amount0);
     pool.reserve1 = pool.reserve1.plus(event.params.amount1);
+    pool.totalSupply = pool.totalSupply.plus(event.params.shares);
     pool.save();
   }
   let positionId = event.params.sender.toHex().concat("-").concat(event.address.toHex());
@@ -83,11 +84,13 @@ export function handleRemoveLiquidity(event: RemoveLiquidityEvent): void {
   transaction.save()
 
 
-  let pool = Pool.load(event.address.toString())
+  let pool = Pool.load(event.address.toHex())
   if (pool) {
     //update pool reserves
     pool.reserve0 = pool.reserve0.minus(event.params.amount0);
     pool.reserve1 = pool.reserve1.minus(event.params.amount1);
+    pool.totalSupply = pool.totalSupply.minus(event.params.shares);
+    
     pool.save();
   }
 
