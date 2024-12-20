@@ -6,6 +6,7 @@ import { Card, Typography, Slider, Button, Spin, Alert, Row, Col, InputNumber} f
 import BackButton from "src/components/common/BackButton";
 import { formatUnits } from "ethers";
 import { toBigInt } from "ethers";
+import RemoveButtonn from "./RemoveButton";
 const { Text } = Typography;
 
 const RemoveLiquidity: React.FC = () => {
@@ -22,14 +23,14 @@ const RemoveLiquidity: React.FC = () => {
 
     // Số tiền thanh khoản tính toán từ percentage
     const liquidityAmount = position?.shares || 0;
-    const amountToWithdraw = (toBigInt(liquidityAmount) * toBigInt(percentage)) / toBigInt(100);
+    const sharesTORemove = (toBigInt(liquidityAmount) * toBigInt(percentage)) / toBigInt(100);
 
     // Lấy dữ liệu của token0 và token1 từ dữ liệu GraphQL
     const token0Amount = position?.token0Amount || 0;
     const token1Amount = position?.token1Amount || 0;
 
     const handleWithdraw = () => {
-        console.log(`Withdrawing ${amountToWithdraw} liquidity (${percentage}%) from pool ${poolId} for user ${user}`);
+        console.log(`Withdrawing ${sharesTORemove} liquidity (${percentage}%) from pool ${poolId} for user ${user}`);
         // TODO: Thêm logic xử lý rút thanh khoản
     };
 
@@ -118,14 +119,10 @@ const RemoveLiquidity: React.FC = () => {
                         </div>
 
                         {/* Nút Remove */}
-                        <Button
-                            type="primary"
-                            style={{ width: "100%", marginTop: 20 }}
-                            onClick={handleWithdraw}
-                            disabled={percentage === 0}
-                        >
-                            Remove Liquidity ({percentage}%)
-                        </Button>
+                        <RemoveButtonn 
+                            poolId={poolId || ""}
+                            shares={sharesTORemove.toString()}
+                        />
 
                         {/* Phần dưới: Hiển thị thông tin position hiện tại */}
                         <div style={{ marginTop: 30 }}>
