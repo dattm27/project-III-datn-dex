@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Typography, Card, Space , Empty} from "antd";
+import { Button, Typography, Card, Space } from "antd";
+import YourPools from './YourPools';
 
 const { Title } = Typography;
 
 export const Pool: React.FC = () => {
   return (
-    <div style={{ padding: "24px" }}>
+    <div style={{ padding: "24px" }} className='page'>
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
       {/* Header */}
       <Space
@@ -23,15 +24,7 @@ export const Pool: React.FC = () => {
 
       {/* Empty State */}
       <Card style={{ textAlign: "center" }}>
-      <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <span>
-                No pools found. <br />
-                Create a pair or add liquidity to see your pools here.
-              </span>
-            }
-          />
+        <YourPools/>
       </Card>
 
       {/* Explore Pools */}

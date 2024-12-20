@@ -1,53 +1,73 @@
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #ddd;
-  
-    &__logo {
-      display: flex;
-      flex: 0 0 auto;
-  
-      h1 {
-        font-size: 24px;
-        margin: 0;
-        color: #333;
-      }
-      img {
-        width: 32px;
-        height: 32px;
-        transition: transform 0.5s ease-in-out; 
-        margin: 0 10px 0 0 ;
-      }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
 
-      &:hover .header__logo-icon {
-        transform: rotate(360deg);
-      }
-    }
-  
-    &__nav-links {
-      flex: 1 1 auto;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-  
-    &__link {
-      text-decoration: none;
+  &__logo {
+    display: flex;
+    flex: 0 0 auto;
+
+    h1 {
+      font-size: 24px;
+      margin: 0;
       color: #333;
-      font-size: 16px;
-      font-weight: 500;
-      transition: color 0.3s;
-  
-      &:hover {
-        color: #007bff;
-      }
     }
-  
-    &__wallet-button {
-      flex: 0 0 auto;
+
+    img {
+      width: 32px;
+      height: 32px;
+      transition: transform 0.5s ease-in-out;
+      margin: 0 10px 0 0;
+    }
+
+    &:hover .header__logo-icon {
+      transform: rotate(360deg);
     }
   }
-  
+
+  &__nav-links {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #007bff;
+    }
+
+    &.active {
+      color: #007bff; // Màu chữ
+      font-weight: bold; // Đậm chữ
+      background-color: #e9ecef; // Màu nền xám nhạt
+      border-radius: 8px; // Giữ bo góc
+      position: relative;
+
+      &::after {
+    
+        position: absolute;
+        left: 10%;
+        bottom: -2px;
+        width: 80%;
+        height: 2px;
+        background-color: #007bff;
+        border-radius: 2px;
+        transition: width 0.3s ease-in-out;
+      }
+    }
+  }
+
+  &__wallet-button {
+    flex: 0 0 auto;
+  }
+}

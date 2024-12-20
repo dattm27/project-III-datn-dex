@@ -33,3 +33,17 @@ declare interface TransactionHistory {
   timestamp: string;
 }
 
+
+declare interface PoolReserve {
+  blockTimestamp?: number;
+  reserve0: number;
+  reserve1: number;
+  time?: string;
+}
+
+declare interface liquidityPosition { 
+  shares: number;
+  token0Amount: number;
+  token1Amount: number;
+  pool: Pool;
+}

@@ -4,19 +4,21 @@ import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { Button, message } from "antd";
 import { ERC20_ABI } from "src/web3/abis";
 import { Address } from 'viem';
+import { useFetchGql } from "src/hooks/useFetch";
+import { getTokenDetailQuery } from "src/services/pools/pool_gql";
 
 interface ApproveERC20ButtonProps {
     tokenAddress: string;
     spenderAddress: string;
     amount: string;
-    token: Token;
+  
 }
 
 export const ApproveERC20Button: React.FC<ApproveERC20ButtonProps> = ({
     tokenAddress,
     spenderAddress,
     amount,
-    token
+    
 }) => {
 
     const { data: hash, isPending, writeContract } = useWriteContract();
@@ -49,18 +51,20 @@ export const ApproveERC20Button: React.FC<ApproveERC20ButtonProps> = ({
         }
     }, [isError]);
 
+    const {data: tokenData} = useFetchGql<{token: Token}>(getTokenDetailQuery(tokenAddress));
+    const token = tokenData?.token;
     return (
         <div>
-            <Button
+            {token && <Button
                 type="primary"
                 size="large"
                 block
                 loading={ isPending}
                 onClick={() => approve()}
             >
-                {isLoading ? `Approving ${token.symbol}...` : `Approve ${token.symbol}`}
+                {isLoading ? `Approving ${token!.symbol}...` : `Approve ${token!.symbol}`}
             </Button>
-            
+            }
         </div>
     );
 };

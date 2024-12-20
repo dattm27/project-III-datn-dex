@@ -6,7 +6,7 @@ import { Layout } from './components/Layout';
 import { ApolloProvider } from '@apollo/client';
 
 import client from './apollo-client';
-//import './App.css'; //default css
+import './App.css'; //default css
 import { WagmiProvider } from "wagmi";
 
 import { AuthProvider } from './contexts';
@@ -20,8 +20,8 @@ const App: React.FC = () => {
     document.title = APP_NAME;
   }, []);
   return (
-
-    <ApolloProvider client={client}>
+    <div className='gradient-background'>
+       <ApolloProvider client={client}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
@@ -39,6 +39,7 @@ const App: React.FC = () => {
         </QueryClientProvider>
       </WagmiProvider>
     </ApolloProvider>
+    </div>
   );
 };
 
